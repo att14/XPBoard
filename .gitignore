@@ -36,3 +36,5 @@ nosetests.xml
 .pydevproject
 
 xp_board/config.py
+.ropeproject/
+xp_board/database.db

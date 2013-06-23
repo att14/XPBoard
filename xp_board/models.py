@@ -2,6 +2,7 @@ import re
 
 from flask.ext.sqlalchemy import SQLAlchemy
 from sqlalchemy.orm.exc import NoResultFound
+from sqlalchemy import orm
 
 from . import app
 
@@ -16,11 +17,11 @@ class User(db.Model):
     username = db.Column(db.String(length=20), unique=True)
 
     @classmethod
-    def find_user_by_username(cls, username, create_if_not_found=False):
+    def find_user_by_username(cls, username, create_if_missing=False):
         try:
             return cls.query.filter(cls.username == username).one()
         except NoResultFound:
-            if create_if_not_found:
+            if create_if_missing:
                 user = cls(username=username)
                 db.session.add(user)
                 db.session.commit()
@@ -33,7 +34,6 @@ ReviewRequestToReviewer = db.Table(
     db.Model.metadata,
     db.Column('review_request_id', db.Integer, db.ForeignKey("review_request.id")),
     db.Column('reviewer_id', db.Integer, db.ForeignKey("user.id")),
-    db.Column('is_primary', db.Boolean)
 )
 
 
@@ -42,29 +42,29 @@ class ReviewRequest(db.Model):
     id = db.Column(db.Integer, primary_key=True)
 
     submitter_id = db.Column(db.Integer, db.ForeignKey("user.id"))
+    primary_reviewer_id = db.Column(db.Integer, db.ForeignKey("user.id"))
     description = db.Column(db.String(length=512))
 
     submitter = db.relationship(
         User,
-        backref=db.orm.backref('submitted_reviews', use_list=True),
-        use_list=False,
-        lazy='dynamic'
+        primaryjoin='ReviewRequest.submitter_id == User.id',
+        backref=orm.backref('submitted_reviews', uselist=True),
+        uselist=False,
     )
 
     primary_reviewer = db.relationship(
         User,
-        primary_join=(
-            'and_(ReviewRequest.id == ReviewRequestToReviewer.review_request_id,'
-            'ReviewRequestToReviewere.is_primary)'
-        ),
-        use_list=False
+        primaryjoin='ReviewRequest.primary_reviewer_id == User.id',
+        backref=orm.backref('primary_reviews', uselist=True),
+        uselist=False,
     )
 
     reviewers = db.relationship(
         User,
-        primary_join='ReviewRequest.id == ReviewRequestToReviewer.review_request_id',
+        secondary=ReviewRequestToReviewer,
         backref='code_reviews'
     )
+
 
 
 class CodeReview(db.Model):
@@ -75,8 +75,8 @@ class CodeReview(db.Model):
 
     review_request = db.relationship(
         ReviewRequest,
-        backref=db.orm.backref('code_reviews', use_list=True),
-        use_list=False
+        backref=orm.backref('code_reviews', uselist=True),
+        uselist=False
     )
 
 
@@ -92,12 +92,12 @@ class Ticket(db.Model):
     owner = db.relationship(
         User,
         primaryjoin='Ticket.owner_id == User.id',
-        backref='owned_tickets',
-        use_list=False
+        backref=orm.backref('owned_tickets', uselist=True),
+        uselist=False
     )
     reporter = db.relationship(
         User,
         primaryjoin='Ticket.reporter_id == User.id',
         backref='reported_tickets',
-        use_list=False
+        uselist=False
     )
