@@ -1,5 +1,3 @@
-import re
-
 from flask.ext.sqlalchemy import SQLAlchemy
 from sqlalchemy.orm.exc import NoResultFound
 from sqlalchemy import orm
