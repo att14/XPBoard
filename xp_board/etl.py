@@ -55,6 +55,33 @@ class ETL(object):
         return self.loader.load(self.transformed)
 
 
+class MultipleExtractETL(ETL):
+
+    @classmethod
+    def execute(cls, identifiers):
+        for data in cls.extractor.extract(identifiers):
+            yield cls(data).execute_transform_load()
+
+    def __init__(self, raw_data):
+        self.raw_data = raw_data
+        self.transformed = {}
+
+    def execute_transform_load(self):
+        self.transform()
+        return self.load()
+
+    def transform(self):
+        self.transformed.update(
+            {
+                key: transformer.transform(self.raw_data)
+                for key, transformer in self.transformers.iteritems()
+            }
+        )
+
+    def load(self):
+        return self.loader.load(self.transformed)
+
+
 class ModelLoader(Loader):
 
     def __init__(self, model_class):

@@ -6,6 +6,7 @@ from . import app
 
 
 db = SQLAlchemy(app)
+db.Model.itercolumns = classmethod(lambda cls: cls.__table__.columns._data.iterkeys())
 
 
 class User(db.Model):
@@ -60,19 +61,25 @@ class ReviewRequest(db.Model):
     reviewers = db.relationship(
         User,
         secondary=ReviewRequestToReviewer,
-        backref='code_reviews'
+        backref='review_requests'
     )
-
 
 
 class CodeReview(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
 
-    review_request_id =  db.Column(db.Integer, db.ForeignKey(ReviewRequest.id))
+    reviewer_id = db.Column(db.Integer, db.ForeignKey(User.id))
+    review_request_id = db.Column(db.Integer, db.ForeignKey(ReviewRequest.id))
+    ship_it = db.Column(db.Boolean)
 
     review_request = db.relationship(
         ReviewRequest,
+        backref=orm.backref('code_reviews', uselist=True),
+        uselist=False
+    )
+    reviewer = db.relationship(
+        User,
         backref=orm.backref('code_reviews', uselist=True),
         uselist=False
     )

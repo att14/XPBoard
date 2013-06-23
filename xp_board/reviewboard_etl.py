@@ -1,9 +1,9 @@
-from collection import namedtuple
 import datetime
 import re
 
 from . import config
 from . import etl
+from . import models
 from .reviewboard_client import ReviewboardClient
 
 
@@ -16,7 +16,7 @@ class ReviewBoardExtractor(etl.Extractor):
     )
 
     def extract(self, usernames):
-        return self.reviewboard_client(
+        return self.reviewboard_client.get_review_requests(
             to_users_directly=usernames,
             max_results=200,
             last_updated_from=datetime.datetime.now() - datetime.timedelta(days=14),
@@ -41,13 +41,18 @@ class FieldTransform(etl.Transformer):
 class SubmitterTransform(etl.Transformer):
 
     def transform(self, rb_review_request):
-        return rb_review_request.get_submitter().fields['username']
+        return models.User.find_user_by_username(
+            rb_review_request.get_submitter().fields['username']
+        )
 
 
 class ReviewersTransform(FieldTransform):
 
     def _transform(self, fields):
-        return [reviewer['title'] for reviewer in fields['target_people']]
+        return [
+            models.User.find_user_by_username(reviewer['title'])
+            for reviewer in fields['target_people']
+        ]
 
 
 class PrimaryReviewerTransform(FieldTransform):
@@ -56,23 +61,23 @@ class PrimaryReviewerTransform(FieldTransform):
 
     def _transform(self, fields):
         matches = self.primary_reviewer_matcher.match(fields['description'])
-        return matches.group('name') if matches else ""
+        return models.User.find_user_by_username(matches.group('name')) if matches else None
 
 
 class ReviewsTransform(etl.Transformer):
 
-    ReviewInfo = namedtuple('ReviewInfo', ['reviewer', 'ship_it'])
-
     def transformer(self, rb_review_request):
         return [
-            self.ReviewInfo(
-                rb_review.get_user().fields['username'],
-                rb_review.fields['ship_it']
+            models.CodeReview(
+                reviewer=models.User.find_user_by_username(
+                    models.rb_review.get_user().fields['username'],
+                ),
+                ship_it=rb_review.fields['ship_it']
             ) for rb_review in rb_review_request.get_reviews()
         ]
 
 
-class ReviewBoardETL(etl.ETL):
+class ReviewBoardETL(etl.MultipleExtractETL):
 
     extractor = ReviewBoardExtractor()
 
@@ -82,5 +87,8 @@ class ReviewBoardETL(etl.ETL):
         'id': FieldTransform('id'),
         'description': FieldTransform('description'),
         'summary': FieldTransform('summary'),
-        'reviews': ReviewsTransform(),
+        'code_reviews': ReviewsTransform(),
+        'reviewers': ReviewersTransform()
     }
+
+    loader = etl.ModelLoader(models.ReviewRequest)
