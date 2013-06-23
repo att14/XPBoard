@@ -43,6 +43,7 @@ class ReviewRequest(db.Model):
     submitter_id = db.Column(db.Integer, db.ForeignKey("user.id"))
     primary_reviewer_id = db.Column(db.Integer, db.ForeignKey("user.id"))
     description = db.Column(db.String(length=512))
+    summary = db.Column(db.String(length=128))
 
     submitter = db.relationship(
         User,

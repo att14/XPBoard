@@ -42,7 +42,8 @@ class SubmitterTransform(etl.Transformer):
 
     def transform(self, rb_review_request):
         return models.User.find_user_by_username(
-            rb_review_request.get_submitter().fields['username']
+            rb_review_request.get_submitter().fields['username'],
+            create_if_missing=True
         )
 
 
@@ -50,7 +51,7 @@ class ReviewersTransform(FieldTransform):
 
     def _transform(self, fields):
         return [
-            models.User.find_user_by_username(reviewer['title'])
+            models.User.find_user_by_username(reviewer['title'], create_if_missing=True)
             for reviewer in fields['target_people']
         ]
 
@@ -61,16 +62,18 @@ class PrimaryReviewerTransform(FieldTransform):
 
     def _transform(self, fields):
         matches = self.primary_reviewer_matcher.match(fields['description'])
-        return models.User.find_user_by_username(matches.group('name')) if matches else None
+        return models.User.find_user_by_username(matches.group('name'), create_if_missing=True) \
+            if matches else None
 
 
 class ReviewsTransform(etl.Transformer):
 
-    def transformer(self, rb_review_request):
+    def transform(self, rb_review_request):
         return [
             models.CodeReview(
                 reviewer=models.User.find_user_by_username(
-                    models.rb_review.get_user().fields['username'],
+                    rb_review.get_user().fields['username'],
+                    create_if_missing=True
                 ),
                 ship_it=rb_review.fields['ship_it']
             ) for rb_review in rb_review_request.get_reviews()
@@ -83,12 +86,12 @@ class ReviewBoardETL(etl.MultipleExtractETL):
 
     transformers = {
         'submitter': SubmitterTransform(),
-        'primary_reviewer': PrimaryReviewerTransform(),
+        'primary_reviewer': PrimaryReviewerTransform('description'),
         'id': FieldTransform('id'),
         'description': FieldTransform('description'),
         'summary': FieldTransform('summary'),
         'code_reviews': ReviewsTransform(),
-        'reviewers': ReviewersTransform()
+        'reviewers': ReviewersTransform('target_people')
     }
 
     loader = etl.ModelLoader(models.ReviewRequest)

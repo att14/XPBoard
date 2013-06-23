@@ -42,15 +42,16 @@ class User(object):
 
 class Resolution(object):
 
-    def __init__(self, header, tickets):
-        temp = header.find(attrs={'class': 'report-result'})
-        if temp:
-            temp = temp.text
-        else:
-            temp = header.text
+    matcher = re.compile(r'(.*)\([0-9]* matches\)')
 
-        matcher = re.compile(r'(.*)\([0-9]* matches\)')
-        match = matcher.search(temp)
+    def __init__(self, header, tickets):
+        full_header = header.find(attrs={'class': 'report-result'})
+        if full_header:
+            full_header = full_header.text
+        else:
+            full_header = header.text
+
+        match = self.matcher.search(full_header)
         self.header = match.group(1)
 
         self.tickets = []
