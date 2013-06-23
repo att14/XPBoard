@@ -1,7 +1,0 @@
-BeautifulSoup==3.2.1
-Genshi==0.7
-RBTools==0.5.1
-ipdb==0.7
-ipython==0.13.2
-readline==6.2.4.1
-wsgiref==0.1.2

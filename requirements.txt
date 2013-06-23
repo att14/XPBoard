@@ -1,0 +1,14 @@
+Flask==0.10.1
+Flask-SQLAlchemy==0.16
+Genshi==0.7
+Jinja2==2.7
+MarkupSafe==0.18
+RBTools==0.5.1
+SQLAlchemy==0.8.1
+Trac==1.0.1
+Werkzeug==0.9.1
+ipdb==0.7
+ipython==0.13.2
+itsdangerous==0.21
+readline==6.2.4.1
+wsgiref==0.1.2
