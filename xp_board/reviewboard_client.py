@@ -19,3 +19,10 @@ class ReviewboardClient(object):
             for review_request in review_request_list_resource:
                 yield review_request
             review_request_list_resource = review_request_list_resource.get_next(**filters)
+
+    def get_user_info(self, username=None):
+        user_list_resource = root.get_users(q=username)
+        while True:
+            for user in user_list_resource:
+                yield user
+            user_list_resource = user_list_resource.get_next()

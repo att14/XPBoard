@@ -7,17 +7,23 @@ from . import models
 from .reviewboard_client import ReviewboardClient
 
 
+reviewboard_client = ReviewboardClient.create_using_reviewboard_url(
+	config.url,
+	username=None,
+	password=None
+)
+
+
+class UserExtractor(etl.Extractor):
+
+	def extract(self, username):
+		return reviewboard_client.get_user_info(username).next()
+
+
 class ReviewBoardExtractor(etl.Extractor):
 
-    reviewboard_client = ReviewboardClient.create_using_reviewboard_url(
-        config.url,
-        username=None,
-        password=None
-    )
-
     def extract(self, usernames):
-        import ipdb; ipdb.set_trace()
-        return self.reviewboard_client.get_review_requests(
+        return reviewboard_client.get_review_requests(
             to_users_directly=usernames,
             max_results=200,
             last_updated_from=datetime.datetime.now() - datetime.timedelta(days=14),
@@ -27,13 +33,11 @@ class ReviewBoardExtractor(etl.Extractor):
 
 class FieldTransform(etl.Transformer):
 
-    field_name = None
-
     def __init__(self, field_name):
         self.field_name = field_name
 
-    def transform(self, rb_review_request):
-        return self._transform(rb_review_request.fields)
+    def transform(self, item_resource):
+        return self._transform(item_resource.fields)
 
     def _transform(self, fields):
         return fields[self.field_name]
@@ -96,3 +100,16 @@ class ReviewBoardETL(etl.MultipleExtractETL):
     }
 
     loader = etl.ModelLoader(models.ReviewRequest)
+
+
+class UserETL(etl.MultipleExtractETL):
+
+	extractor = UserExtractor()
+
+	transformers = {
+		'username': FieldTransform('username'),
+		'first_name': FieldTransform('first_name'),
+		'last_name': FieldTransform('last_name')
+	}
+
+	loader = etl.ModelLoader(models.User)
