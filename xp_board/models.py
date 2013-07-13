@@ -5,8 +5,16 @@ from sqlalchemy import orm
 from . import app
 
 
+def list_by_ids(cls, ids):
+	return cls.query.filter(cls.id.in_(ids)).all()
+
+def find_by_id(cls, model_id):
+	model_list = cls.list_by_ids([model_id])
+	return model_list[0] if model_list else None
+
 db = SQLAlchemy(app)
-db.Model.itercolumns = classmethod(lambda cls: cls.__table__.columns._data.iterkeys())
+db.Model.list_by_ids = classmethod(list_by_ids)
+db.Model.find_by_id = classmethod(find_by_id)
 
 
 class User(db.Model):

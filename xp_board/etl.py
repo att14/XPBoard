@@ -45,10 +45,10 @@ class ETL(object):
 
     def transform(self):
         self.transformed.update(
-            {
-                key: transformer.transform(self.raw_data)
+            dict(
+                (key, transformer.transform(self.raw_data))
                 for key, transformer in self.transformers.iteritems()
-            }
+            )
         )
 
     def load(self):
@@ -72,10 +72,10 @@ class MultipleExtractETL(ETL):
 
     def transform(self):
         self.transformed.update(
-            {
-                key: transformer.transform(self.raw_data)
+            dict(
+                (key, transformer.transform(self.raw_data))
                 for key, transformer in self.transformers.iteritems()
-            }
+            )
         )
 
     def load(self):
@@ -84,8 +84,15 @@ class MultipleExtractETL(ETL):
 
 class ModelLoader(Loader):
 
-    def __init__(self, model_class):
+    def __init__(self, model_class, upsert_key='id'):
         self.model_class = model_class
+        self.upsert_key = upsert_key
 
     def load(self, transformed):
-        return self.model_class(**transformed)
+        model = self.model_class.find_by_id(transformed[self.upsert_key])
+        if not model: return self.model_class(**transformed)
+
+        for attribute_name, value in transformed.iteritems():
+            setattr(model, attribute_name, value)
+        return model
+

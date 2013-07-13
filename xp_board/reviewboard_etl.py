@@ -11,11 +11,12 @@ class ReviewBoardExtractor(etl.Extractor):
 
     reviewboard_client = ReviewboardClient.create_using_reviewboard_url(
         config.url,
-        username=config.username,
-        password=config.password
+        username=None,
+        password=None
     )
 
     def extract(self, usernames):
+        import ipdb; ipdb.set_trace()
         return self.reviewboard_client.get_review_requests(
             to_users_directly=usernames,
             max_results=200,
@@ -58,10 +59,10 @@ class ReviewersTransform(FieldTransform):
 
 class PrimaryReviewerTransform(FieldTransform):
 
-    primary_reviewer_matcher = re.compile("[Pp]rimary: (?P<name>[a-zA-z_]*)")
+    primary_reviewer_matcher = re.compile("[Pp]rimary (:?[Rr]eviewer)?: (?P<name>[a-zA-z_]*)")
 
     def _transform(self, fields):
-        matches = self.primary_reviewer_matcher.match(fields['description'])
+        matches = self.primary_reviewer_matcher.search(fields['description'])
         return models.User.find_user_by_username(matches.group('name'), create_if_missing=True) \
             if matches else None
 

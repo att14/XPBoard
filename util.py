@@ -1,9 +1,9 @@
-import argparse
+import optparse
 
 
 def parse_host_and_port():
-    parser = argparse.ArgumentParser()
-    parser.add_argument(
+    parser = optparse.OptionParser()
+    parser.add_option(
         '--port',
         action='store',
         type=int,
@@ -11,7 +11,7 @@ def parse_host_and_port():
         default=5000,
         help='The port that should be listned on.',
     )
-    parser.add_argument(
+    parser.add_option(
         '--host',
         action='store',
         type=str,
@@ -19,5 +19,5 @@ def parse_host_and_port():
         default='0.0.0.0',
         help='The IP address on which to run the server.'
     )
-    namespace = parser.parse_args()
+    namespace, _ = parser.parse_args()
     return namespace.host, namespace.port
