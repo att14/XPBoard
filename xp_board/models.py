@@ -35,10 +35,6 @@ class User(db.Model):
 
     username = db.Column(db.String(length=20), unique=True)
 
-    @property
-    def full_name(self):
-        return '%s %s' % (self.first_name, self.last_name)
-
     @classmethod
     def search_for_user(cls, user_string, suggestions=None):
         try:
@@ -71,6 +67,17 @@ class User(db.Model):
                 db.session.commit()
                 return user
             raise
+
+    @property
+    def pending_primary_reviews(self):
+        return filter(
+            lambda review_request: review_request.ship_it_status == 'pending',
+            self.primary_reviews
+        )
+
+    @property
+    def full_name(self):
+        return '%s %s' % (self.first_name, self.last_name)
 
     def levenshtein_on_names(self, string):
         if not string:

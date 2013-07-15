@@ -52,22 +52,16 @@ class FieldTransform(etl.Transformer):
 class SubmitterTransform(etl.Transformer):
 
     def transform(self, rb_review_request):
-        user = UserETL.execute_one(rb_review_request.get_submitter().fields['username'])
-        models.db.session.add(user)
-        models.db.session.commit()
-        return user
+        return UserETL.execute_one(rb_review_request.get_submitter().fields['username'])
 
 
 class ReviewersTransform(FieldTransform):
 
     def _transform(self, fields):
-        users = [
+        return [
             UserETL.execute_one(reviewer['title'])
             for reviewer in fields['target_people']
         ]
-        models.db.session.add_all(users)
-        models.db.session.commit()
-        return users
 
 
 class PrimaryReviewerTransform(FieldTransform):
@@ -132,6 +126,6 @@ class UserETL(etl.MultipleExtractETL):
     loader = etl.ModelLoader(models.User, upsert_key='username')
 
     @classmethod
-    def execute_one(cls, identifier):
-        return models.User.maybe_find_user_by_username(identifier) or \
-            super(UserETL, cls).execute_one(identifier)
+    def execute_one(cls, username):
+        return models.User.maybe_find_user_by_username(username) or \
+            super(UserETL, cls).execute_one(username)
