@@ -9,4 +9,4 @@ _pyflakes_ignore = [routes]
 if __name__ == "__main__":
     host, port = parse_host_and_port()
     app.port = port
-    app.run(port=port, host=host)
+    app.run(port=port, host=host, debug=True)

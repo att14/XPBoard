@@ -10,7 +10,7 @@
 	<h2>Reviewboard Dashboard!</h2>
       </div>
       {% for user in users %}
-      <h3>{{ user.username }}</h3>
+      <h3><a href="/tickets#{{ user.username }}">{{ user.username }}</a></h3>
       <table class="table table-hover">
 	<tr>
 	  <th>Id</th>

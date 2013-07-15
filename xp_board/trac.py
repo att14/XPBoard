@@ -29,6 +29,7 @@ def authenticate():
 class User(object):
 
     def __init__(self, username):
+        self.username = username
         html = urllib2.urlopen('https://trac.yelpcorp.com/report/7?USER=%s' % username)
         self.parser = BeautifulSoup(''.join(html.readlines()))
 
@@ -42,8 +43,6 @@ class User(object):
 
 class Resolution(object):
 
-    matcher = re.compile(r'(.*)\([0-9]* matches\)')
-
     def __init__(self, header, tickets):
         full_header = header.find(attrs={'class': 'report-result'})
         if full_header:
@@ -51,8 +50,7 @@ class Resolution(object):
         else:
             full_header = header.text
 
-        match = self.matcher.search(full_header)
-        self.header = match.group(1)
+        self.header = full_header[:full_header.rfind('(')]
 
         self.tickets = []
         for ticket in tickets.findAll('tr'):
