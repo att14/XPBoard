@@ -27,6 +27,9 @@
                 <div>
                     <h3>
                         <a name="{{ user.username }}" href="#{{ user.username }}">{{ user.username }}</a>
+                        <button class="btn" type="button">
+                            <a href="/#{{ user.username }}">Reviews</a>
+                        </button>
                     </h3>
                     {% for resolution in user.extract() %}
                         <h4>{{ resolution.header }}</h4>

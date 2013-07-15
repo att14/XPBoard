@@ -25,8 +25,14 @@
             </div>
             {% for user in users %}
                 <h3>
-                    <a name="{{ user.username }}" href="#{{ user.username }}">{{ user.username }}</a>
-                    <a href="/tickets#{{ user.username }}">[Tickets]</a>
+                    <div>
+                        <a name="{{ user.username }}" href="#{{ user.username }}">{{ user.username }}</a>
+                    </div>
+                    <div>
+                        <button class="btn" type="button">
+                            <a href="/tickets#{{ user.username }}">Tickets</a>
+                        </button>
+                    </div>
                 </h3>
                 <table class="table table-hover">
                     <tr>
