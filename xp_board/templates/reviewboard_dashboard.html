@@ -1,72 +1,65 @@
 <html>
-    <head>
-        <title>{{ team_name }} Reviews</title>
-        <link href="http://twitter.github.com/bootstrap/assets/css/bootstrap.css" rel="stylesheet">
-        <link href="http://twitter.github.com/bootstrap/assets/css/bootstrap-responsive.css" rel="stylesheet">
-        <script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
-        <script src="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/js/bootstrap.min.js"></script>
-    </head>
-    <body>
-        <div class="container page pagination-centered">
-            <div class="nav-collapse collapse navbar-inverse-collapse">
-                <ul class="nav nav-tabs">
-                    <li class="active">
-                        <a class="brand" href="#">{{ team_name }} Reviews</a>
-                    </li>
-                    <li class="dropdown">
-                        <a class="dropdown-toggle" data-toggle="dropdown" href="#">Members<b class="caret"></b></a>
-                        <ul class="dropdown-menu">
-                            {% for user in users %}
-                                <li><a href="#{{ user.username}}">{{ user.username }}</a></li>
-                            {% endfor %}
-                        </ul>
-                    </li>
-                </ul>
-            </div>
-            <table class="table">
-                <tr>
-                    {% for user in users %}
-                        <td>{{ user.username }} {{ length(user.primary_reviews) }}</td>
-                    {% endfor %}
-                </tr>
-            </table>
-            {% for user in users %}
-                <h3>
-                    <div>
-                        <a name="{{ user.username }}" href="#{{ user.username }}">{{ user.username }}</a>
-                    </div>
-                    <div>
-                        <button class="btn" type="button">
-                            <a href="/tickets#{{ user.username }}">Tickets</a>
-                        </button>
-                    </div>
-                </h3>
-                <table class="table table-hover">
-                    <tr>
-                        <th>Id</th>
-                        <th>Submitter</th>
-                        <th>Primary</th>
-                        <th>Summary</th>
-                        <th>Status</th>
-                    </tr>
-                    {% for review_request in user.primary_reviews %}
-                        <tr>
-                            <td>
-                                <a href={{ review_url_generator(review_request.id) }}>{{ review_request.id }}</a>
-                            </td>
-                            <td>{{ review_request.submitter.username }}</td>
-                            <td>{{ review_request.primary_reviewer.username }}</td>
-                            <td>{{ review_request.summary }}</td>
-                            <td>{{ review_request.ship_it_status }}</td>
-                        </tr>
-                    {% endfor %}
-                </table>
-            {% endfor %}
+  <head>
+    <title>{{ team_name }} Reviews</title>
+    <link href="http://twitter.github.com/bootstrap/assets/css/bootstrap.css" rel="stylesheet">
+    <link href="http://twitter.github.com/bootstrap/assets/css/bootstrap-responsive.css" rel="stylesheet">
+    <script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
+    <script src="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/js/bootstrap.min.js"></script>
+  </head>
+  <body>
+    <div class="container page pagination-centered">
+      <div class="nav-collapse collapse navbar-inverse-collapse">
+        <ul class="nav nav-tabs">
+          <li class="active">
+            <a class="brand" href="#">{{ team_name }} Reviews</a>
+          </li>
+          <li class="dropdown">
+            <a class="dropdown-toggle" data-toggle="dropdown" href="#">Members<b class="caret"></b></a>
+            <ul class="dropdown-menu">
+              {% for user in users %}
+              <li><a href="#{{ user.username}}">{{ user.username }} {{ length(user.primary_reviews) }}</a></li>
+              {% endfor %}
+            </ul>
+          </li>
+        </ul>
+      </div>
+      {% for user in users %}
+      <h3>
+        <div>
+          <a name="{{ user.username }}" href="#{{ user.username }}">{{ user.username }}</a>
         </div>
-        <script type="text/javascript">
-            $(document).ready(function () {
-                $('.dropdown-toggle').dropdown();
-            });
-        </script>
-    </body>
+        <div>
+          <button class="btn" type="button">
+            <a href="/tickets#{{ user.username }}">Tickets</a>
+          </button>
+        </div>
+      </h3>
+      <table class="table table-hover">
+        <tr>
+          <th>Id</th>
+          <th>Submitter</th>
+          <th>Primary</th>
+          <th>Summary</th>
+          <th>Status</th>
+        </tr>
+        {% for review_request in user.pending_primary_reviews %}
+        <tr>
+          <td>
+            <a href={{ review_url_generator(review_request.id) }}>{{ review_request.id }}</a>
+          </td>
+          <td>{{ review_request.submitter.username }}</td>
+          <td>{{ review_request.primary_reviewer.username }}</td>
+          <td>{{ review_request.summary }}</td>
+          <td>{{ review_request.ship_it_status }}</td>
+        </tr>
+        {% endfor %}
+      </table>
+      {% endfor %}
+    </div>
+    <script type="text/javascript">
+      $(document).ready(function () {
+      $('.dropdown-toggle').dropdown();
+      });
+    </script>
+  </body>
 </html>

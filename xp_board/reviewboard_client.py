@@ -1,5 +1,10 @@
 from rbtools.api.client import RBClient
 
+from . import config
+
+
+class UserNotFoundError(Exception): pass
+
 
 class ReviewboardClient(object):
     """Thin wrapper around `rbtools.api.client.RBClient`"""
@@ -23,7 +28,17 @@ class ReviewboardClient(object):
     def get_user_info(self, username=None):
         root = self._rb_client.get_root()
         user_list_resource = root.get_users(q=username)
-        while True:
-            for user in user_list_resource:
-                yield user
-            user_list_resource = user_list_resource.get_next()
+        try:
+            while True:
+                for user in user_list_resource:
+                    yield user
+                user_list_resource = user_list_resource.get_next()
+        except StopIteration:
+            raise UserNotFoundError()
+
+
+client = ReviewboardClient.create_using_reviewboard_url(
+    config.url,
+    username=config.username,
+    password=config.password
+)

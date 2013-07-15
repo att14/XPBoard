@@ -31,6 +31,27 @@
             <a href="/#{{ user.username }}">Reviews</a>
           </button>
         </h3>
+        <h4>code reviews</h4>
+        <table class="table table-hover">
+          <tr>
+            <th>Id</th>
+            <th>Submitter</th>
+            <th>Primary</th>
+            <th>Summary</th>
+            <th>Status</th>
+          </tr>
+          {% for review_request in user.pending_primary_reviews %}
+          <tr>
+            <td>
+              <a href={{ review_url_generator(review_request.id) }}>{{ review_request.id }}</a>
+            </td>
+            <td>{{ review_request.submitter.username }}</td>
+            <td>{{ review_request.primary_reviewer.username }}</td>
+            <td>{{ review_request.summary }}</td>
+            <td>{{ review_request.ship_it_status }}</td>
+          </tr>
+          {% endfor %}
+        </table>
         {% for resolution, tickets in user.pending_tickets_by_status.iteritems() %}
         <h4>{{ resolution }}</h4>
         <table class="table table-hover">
@@ -54,14 +75,15 @@
             </td>
           </tr>
           {% endfor %}
-        </table>
-        {% endfor %}
+          <table class="table table-hover">
+          </table>
+          {% endfor %}
       </div>
       {% endfor %}
     </div>
     <script type="text/javascript">
       $(document).ready(function () {
-        $('.dropdown-toggle').dropdown();
+      $('.dropdown-toggle').dropdown();
       });
     </script>
   </body>

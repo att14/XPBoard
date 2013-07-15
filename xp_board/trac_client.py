@@ -25,13 +25,16 @@ class TracClient(object):
     def __init__(self, username, password):
         self.server_proxy = ServerProxy(
             self.server_proxy_format.format(
-                username=config.username,
-                password=config.password
+                username=username,
+                password=password
             )
         )
 
-    def get_ticket_ids_for_user(self, username):
-        return self.server_proxy.ticket.query("owner={0}".format(username))
+    def get_unclosed_ticket_ids_for_user(self, username):
+        return self.server_proxy.ticket.query("owner={0}&status!=closed".format(username))
 
     def get_ticket(self, trac_id):
         return Ticket(*self.server_proxy.ticket.get(trac_id))
+
+
+client = TracClient(config.username, config.password)

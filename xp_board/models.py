@@ -79,6 +79,15 @@ class User(db.Model):
     def full_name(self):
         return '%s %s' % (self.first_name, self.last_name)
 
+    @property
+    def pending_tickets_by_status(self):
+        pending_tickets = self.owned_tickets.filter(Ticket.status != 'closed').all()
+        status_to_tickets = {}
+        for ticket in pending_tickets:
+            status_to_tickets.setdefault(ticket.completion_status, []).append(ticket)
+
+        return status_to_tickets
+
     def levenshtein_on_names(self, string):
         if not string:
             return 1000
@@ -98,6 +107,14 @@ ReviewRequestToReviewer = db.Table(
     db.Model.metadata,
     db.Column('review_request_id', db.Integer, db.ForeignKey("review_request.id")),
     db.Column('reviewer_id', db.Integer, db.ForeignKey("user.id")),
+)
+
+
+ReviewRequestToTicket = db.Table(
+    'review_request_to_ticket',
+    db.Model.metadata,
+    db.Column('review_request_id', db.Integer, db.ForeignKey("review_request.id")),
+    db.Column('ticket_id', db.Integer, db.ForeignKey("ticket.id")),
 )
 
 
@@ -174,16 +191,41 @@ class Ticket(db.Model):
     owner_id = db.Column(db.Integer, db.ForeignKey("user.id"))
 
     status = db.Column(db.String(length=32))
+    resolution = db.Column(db.String(length=32))
+    summary = db.Column(db.String(length=256))
+    component = db.Column(db.String(length=64))
+    priority = db.Column(db.Integer)
+
+    @property
+    def completion_status(self):
+        if self.status == 'closed':
+            return self.status
+
+        if self.review_requests:
+            # TODO: do something better here
+            review_request = self.review_requests[0]
+            if review_request.ship_it_status != 'pending':
+                return review_request.ship_it_status
+            return 'in_review'
+
+        return self.status
 
     owner = db.relationship(
         User,
         primaryjoin='Ticket.owner_id == User.id',
-        backref=orm.backref('owned_tickets', uselist=True),
+        backref=orm.backref('owned_tickets', uselist=True, lazy='dynamic'),
         uselist=False
     )
+
     reporter = db.relationship(
         User,
         primaryjoin='Ticket.reporter_id == User.id',
         backref='reported_tickets',
         uselist=False
+    )
+
+    review_requests = db.relationship(
+        ReviewRequest,
+        secondary=ReviewRequestToTicket,
+        backref='tickets'
     )

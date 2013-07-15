@@ -40,6 +40,7 @@ class ETL(object):
     def execute(self):
         self.extract()
         self.transform()
+        self.post_transform()
         return self.load()
 
     def extract(self):
@@ -49,10 +50,17 @@ class ETL(object):
     def transform(self):
         self.transformed.update(
             dict(
-                (key, transformer.transform(self.raw_data))
+                (key, self.apply_transformer(key, transformer))
                 for key, transformer in self.transformers.iteritems()
             )
         )
+
+    def apply_transformer(self, key, transformer):
+        if not transformer:
+            return self.raw_data[key]
+        if isinstance(transformer, str):
+            return self.raw_data[transformer]
+        return transformer.transform(self.raw_data)
 
     def post_transform(self):
         pass
@@ -82,22 +90,6 @@ class MultipleExtractETL(ETL):
         self.post_transform()
         return self.load()
 
-    def transform(self):
-        self.transformed.update(
-            dict(
-                (key, self.apply_transformer(key, transformer))
-                for key, transformer in self.transformers.iteritems()
-            )
-        )
-
-    def apply_transformer(self, key, transformer):
-        if not transformer:
-            return self.raw_data[key]
-        return transformer.transform(self.raw_data)
-
-    def load(self):
-        return self.loader.load(self.transformed)
-
 
 class ModelLoader(Loader):
 
@@ -122,3 +114,14 @@ class ModelLoader(Loader):
         models.db.session.commit()
         return model
 
+
+class FieldTransform(Transformer):
+
+    def __init__(self, field_name):
+        self.field_name = field_name
+
+    def transform(self, item_resource):
+        return self._transform(item_resource.fields)
+
+    def _transform(self, fields):
+        return fields[self.field_name]

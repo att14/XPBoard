@@ -41,3 +41,5 @@ xp_board/database.db
 
 ENV
 refresh_review_requests.log
+
+refresh_data.log
