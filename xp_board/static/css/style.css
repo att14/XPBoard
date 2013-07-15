@@ -51,3 +51,41 @@
 }
 
 /* End: Recommended Isotope styles */
+
+/* Start: General styles */
+
+div.table-header .navbar-inner ul.nav {
+    float: right;
+}
+
+div.table-header .owner-title {
+    text-shadow: 2px 2px #ccc;
+}
+
+div.table-header ul.nav li a {
+    padding: 10px 0 10px 10px;
+}
+
+table.sortable th {
+	background: url('../images/unsorted.gif') no-repeat right center;
+    cursor: hand;
+    padding-right: 20px;
+}
+
+table.sortable th.headerSortDown {
+	background: #eee url('../images/asc.gif') no-repeat right center;
+}
+
+table.sortable th.headerSortUp {
+	background: #eee url('../images/desc.gif') no-repeat right center;
+}
+
+/* End: General styles */
+
+/* Start: Tickets */
+
+thead th.ticket {
+    min-width: 70px;
+}
+
+/* End: Tickets */
