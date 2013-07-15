@@ -1,6 +1,6 @@
 <html>
     <head>
-        <Title>Tickets</title>
+        <Title>{{ team_name }} Tickets</title>
         <link href="http://twitter.github.com/bootstrap/assets/css/bootstrap.css" rel="stylesheet">
         <link href="http://twitter.github.com/bootstrap/assets/css/bootstrap-responsive.css" rel="stylesheet">
         <script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
@@ -8,7 +8,7 @@
     <body>
         <div class="container page pagination-centered">
             <div class='hero-unit'>
-                <h2>Look what I'm working on :D</h2>
+                <h2>{{ team_name }} Tickets!</h2>
             </div>
             {% for user in users %}
                 <div>
@@ -23,7 +23,7 @@
                                 <th>Priority</th>
                                 <th>Summary</th>
                             </tr>
-                            {% for ticket in sort(resolution.tickets, cmp=ticket_cmp) %}
+                            {% for ticket in resolution.tickets %}
                                 <tr>
                                     <td>
                                         <a href="https://trac.yelpcorp.com/ticket/{{ ticket.number }}">{{ ticket.number }}</a>

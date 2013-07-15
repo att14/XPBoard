@@ -1,77 +1,51 @@
-import re
-import urllib2
-
-from BeautifulSoup import BeautifulSoup
+from xmlrpclib import ServerProxy
 
 from xp_board import config
-from xp_board.util import segment
 
 
-def authenticate():
-    # create a password manager
-    password_mgr = urllib2.HTTPPasswordMgrWithDefaultRealm()
-
-    # Add the username and password.
-    password_mgr.add_password(None, config.trac_url,
-                                    config.username,
-                                    config.password)
-
-    handler = urllib2.HTTPBasicAuthHandler(password_mgr)
-
-    # create "opener" (OpenerDirector instance)
-    opener = urllib2.build_opener(handler)
-
-    # Install the opener.
-    # Now all calls to urllib2.urlopen use our opener.
-    urllib2.install_opener(opener)
+statuses = {'assigned': 'Assigned', 'reopened': 'Reopened', 'new': 'Owned'}
+server = ServerProxy('https://%s:%s@trac.yelpcorp.com/login/rpc' % (config.username, config.password))
 
 
 class User(object):
 
     def __init__(self, username):
         self.username = username
-        html = urllib2.urlopen('https://trac.yelpcorp.com/report/7?USER=%s' % username)
-        self.parser = BeautifulSoup(''.join(html.readlines()))
+
+    def get_tickets(self):
+        return dict((status, Resolution(self.username, status).tickets)
+                    for status in statuses)
 
     def extract(self):
-        tickets_html = [self.parser.find(attrs={'class': 'report-result'})]
-        tickets_html.extend(self.parser.find(attrs={'class': 'listing tickets'}).findAll('tbody'))
-
-        for header, tickets in segment(tickets_html, 2):
-            yield Resolution(header, tickets)
+        for status in statuses:
+            resolution = Resolution(self.username, status)
+            if resolution.tickets:
+                yield resolution
 
 
 class Resolution(object):
 
-    def __init__(self, header, tickets):
-        full_header = header.find(attrs={'class': 'report-result'})
-        if full_header:
-            full_header = full_header.text
-        else:
-            full_header = header.text
+    qstr = "owner=%s&status=%s&order=priority"
 
-        self.header = full_header[:full_header.rfind('(')]
-
-        self.tickets = []
-        for ticket in tickets.findAll('tr'):
-            self.tickets.append(Ticket(ticket))
+    def __init__(self, username, status):
+        self.header = statuses[status]
+        self.tickets = [Ticket(number) for number in
+                        server.ticket.query(self.qstr % (username, status))]
 
 
 class Ticket(object):
 
-    def __init__(self, html):
-        self.number = int(html.find(attrs={'class': 'ticket'}).text.strip('#'))
-        self.reporter = html.find(attrs={'class': 'reporter'}).text
-        self.owner = html.find(attrs={'class': 'owner'}).text
-        self.summary = html.find(attrs={'class': 'summary'}).text
-        self.component = html.find(attrs={'class': 'component'}).text
-        self.milestone = html.find(attrs={'class': 'milestone'}).text
-        self.type = html.find(attrs={'class': 'type'}).text
-        self.priority = html.find(attrs={'class': 'priority'}).text
-        self.created = html.find(attrs={'class': 'date'}).text
+    def __init__(self, number):
+        self.number, self.time_created, self.time_changed, self.attributes = server.ticket.get(number)
+
+    @property
+    def priority(self):
+        return self.attributes['priority']
+
+    @property
+    def summary(self):
+        return self.attributes['summary']
 
 
 if __name__ == '__main__':
-    authenticate()
-    user = User('atribone')
-    print [i.tickets[0].number for i in user.extract()]
+    print User('atribone').get_tickets()
