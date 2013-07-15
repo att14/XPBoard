@@ -8,25 +8,31 @@ from .reviewboard_client import ReviewboardClient
 
 
 reviewboard_client = ReviewboardClient.create_using_reviewboard_url(
-	config.url,
-	username=None,
-	password=None
+    config.url,
+    username=config.username,
+    password=config.password
 )
 
 
 class UserExtractor(etl.Extractor):
 
-	def extract(self, username):
-		return reviewboard_client.get_user_info(username).next()
+    def extract(self, username):
+        return reviewboard_client.get_user_info(username).next()
 
 
-class ReviewBoardExtractor(etl.Extractor):
+class ReviewRequestExtractor(etl.Extractor):
 
-    def extract(self, usernames):
+    def __init__(self, number_of_days_to_look_back=14, max_results=200):
+        self.number_of_days_to_look_back = number_of_days_to_look_back
+        self.max_results = max_results
+
+    def extract(self, username):
         return reviewboard_client.get_review_requests(
-            to_users_directly=usernames,
-            max_results=200,
-            last_updated_from=datetime.datetime.now() - datetime.timedelta(days=14),
+            to_users_directly=username,
+            max_results=self.max_results,
+            last_updated_from=datetime.datetime.now() - datetime.timedelta(
+                days=self.number_of_days_to_look_back
+            ),
             status='pending'
         )
 
@@ -46,29 +52,31 @@ class FieldTransform(etl.Transformer):
 class SubmitterTransform(etl.Transformer):
 
     def transform(self, rb_review_request):
-        return models.User.find_user_by_username(
-            rb_review_request.get_submitter().fields['username'],
-            create_if_missing=True
-        )
+        user = UserETL.execute_one(rb_review_request.get_submitter().fields['username'])
+        models.db.session.add(user)
+        models.db.session.commit()
+        return user
 
 
 class ReviewersTransform(FieldTransform):
 
     def _transform(self, fields):
-        return [
-            models.User.find_user_by_username(reviewer['title'], create_if_missing=True)
+        users = [
+            UserETL.execute_one(reviewer['title'])
             for reviewer in fields['target_people']
         ]
+        models.db.session.add_all(users)
+        models.db.session.commit()
+        return users
 
 
 class PrimaryReviewerTransform(FieldTransform):
 
-    primary_reviewer_matcher = re.compile("[Pp]rimary (:?[Rr]eviewer)?: (?P<name>[a-zA-z_]*)")
+    primary_reviewer_matcher = re.compile("[Pp]rimary(:? [Rr]eviewer)? ?(:?:|-) ?(?P<name>[a-zA-z_]*)")
 
     def _transform(self, fields):
         matches = self.primary_reviewer_matcher.search(fields['description'])
-        return models.User.find_user_by_username(matches.group('name'), create_if_missing=True) \
-            if matches else None
+        return matches.group('name') if matches else None
 
 
 class ReviewsTransform(etl.Transformer):
@@ -85,13 +93,13 @@ class ReviewsTransform(etl.Transformer):
         ]
 
 
-class ReviewBoardETL(etl.MultipleExtractETL):
+class ReviewRequestETL(etl.MultipleExtractETL):
 
-    extractor = ReviewBoardExtractor()
+    extractor = ReviewRequestExtractor()
 
     transformers = {
         'submitter': SubmitterTransform(),
-        'primary_reviewer': PrimaryReviewerTransform('description'),
+        'primary_reviewer_string': PrimaryReviewerTransform('description'),
         'id': FieldTransform('id'),
         'description': FieldTransform('description'),
         'summary': FieldTransform('summary'),
@@ -101,15 +109,22 @@ class ReviewBoardETL(etl.MultipleExtractETL):
 
     loader = etl.ModelLoader(models.ReviewRequest)
 
+    def post_transform(self):
+        self.transformed['primary_reviewer'] = models.User.search_for_user(
+            self.transformed['primary_reviewer_string'],
+            suggestions=self.transformed['reviewers']
+        )
+        del self.transformed['primary_reviewer_string']
+
 
 class UserETL(etl.MultipleExtractETL):
 
-	extractor = UserExtractor()
+    extractor = UserExtractor()
 
-	transformers = {
-		'username': FieldTransform('username'),
-		'first_name': FieldTransform('first_name'),
-		'last_name': FieldTransform('last_name')
-	}
+    transformers = {
+        'username': FieldTransform('username'),
+        'first_name': FieldTransform('first_name'),
+        'last_name': FieldTransform('last_name')
+    }
 
-	loader = etl.ModelLoader(models.User)
+    loader = etl.ModelLoader(models.User, upsert_key='username')
