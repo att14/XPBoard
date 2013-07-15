@@ -17,6 +17,7 @@
 	  <th>Submitter</th>
 	  <th>Primary</th>
 	  <th>Summary</th>
+          <th>Status</th>
 	</tr>
 	{% for review_request in user.primary_reviews %}
 	<tr>
@@ -26,6 +27,7 @@
 	  <td>{{ review_request.submitter.username }}</td>
 	  <td>{{ review_request.primary_reviewer.username }}</td>
 	  <td>{{ review_request.summary }}</td>
+          <td>{{ review_request.ship_it_status }}</td>
 	</tr>
 	{% endfor %}
       </table>

@@ -102,6 +102,7 @@ class ReviewRequestETL(etl.MultipleExtractETL):
         'primary_reviewer_string': PrimaryReviewerTransform('description'),
         'id': FieldTransform('id'),
         'description': FieldTransform('description'),
+        'status': FieldTransform('status'),
         'summary': FieldTransform('summary'),
         'code_reviews': ReviewsTransform(),
         'reviewers': ReviewersTransform('target_people')
@@ -110,10 +111,11 @@ class ReviewRequestETL(etl.MultipleExtractETL):
     loader = etl.ModelLoader(models.ReviewRequest)
 
     def post_transform(self):
-        self.transformed['primary_reviewer'] = models.User.search_for_user(
-            self.transformed['primary_reviewer_string'],
-            suggestions=self.transformed['reviewers']
-        )
+        if self.transformed['primary_reviewer_string']:
+            self.transformed['primary_reviewer'] = models.User.search_for_user(
+                self.transformed['primary_reviewer_string'],
+                suggestions=self.transformed['reviewers']
+            )
         del self.transformed['primary_reviewer_string']
 
 
@@ -128,3 +130,8 @@ class UserETL(etl.MultipleExtractETL):
     }
 
     loader = etl.ModelLoader(models.User, upsert_key='username')
+
+    @classmethod
+    def execute_one(cls, identifier):
+        return models.User.maybe_find_user_by_username(identifier) or \
+            super(UserETL, cls).execute_one(identifier)

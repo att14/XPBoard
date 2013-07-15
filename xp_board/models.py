@@ -54,6 +54,13 @@ class User(db.Model):
         return None
 
     @classmethod
+    def maybe_find_user_by_username(cls, *args, **kwargs):
+        try:
+            return cls.find_user_by_username(*args, **kwargs)
+        except NoResultFound:
+            return None
+
+    @classmethod
     def find_user_by_username(cls, username, create_if_missing=False):
         try:
             return cls.query.filter(cls.username == username).one()
@@ -66,10 +73,14 @@ class User(db.Model):
             raise
 
     def levenshtein_on_names(self, string):
-        if not all([self.first_name, self.last_name, self.username]):
-            import ipdb; ipdb.set_trace()
+        if not string:
+            return 1000
+        names = filter(
+            lambda name: name is not None,
+            [self.first_name, self.last_name, self.username, self.full_name]
+        )
         best_match = min(
-            [self.first_name, self.last_name, self.username, self.full_name],
+            names,
             key=lambda name: lib.levenshtein(name.lower(), string.lower())
         )
         return lib.levenshtein(best_match, string)
@@ -91,6 +102,21 @@ class ReviewRequest(db.Model):
     primary_reviewer_id = db.Column(db.Integer, db.ForeignKey("user.id"))
     description = db.Column(db.String(length=512))
     summary = db.Column(db.String(length=128))
+    status = db.Column(db.String(length=20))
+
+    @property
+    def has_ship_it(self):
+        return any(code_review.ship_it for code_review in self.code_reviews)
+
+    @property
+    def ship_it_status(self):
+        if self.status == 'submitted':
+            return self.status
+
+        if self.has_ship_it:
+            return 'ship_it'
+
+        return self.status
 
     submitter = db.relationship(
         User,
