@@ -13,7 +13,7 @@
             {% for user in users %}
                 <div>
                     <h3>
-                        <a href="#{{ user.username }}">{{ user.username }}</a>
+                        <a name="{{ user.username }}" href="#{{ user.username }}">{{ user.username }}</a>
                     </h3>
                     {% for resolution in user.extract() %}
                         <h4>{{ resolution.header }}</h4>
