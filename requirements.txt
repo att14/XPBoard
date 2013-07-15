@@ -12,3 +12,4 @@ ipython==0.13.2
 itsdangerous==0.21
 readline==6.2.4.1
 wsgiref==0.1.2
+xmlrpclib==1.0.1

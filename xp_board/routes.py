@@ -14,14 +14,15 @@ def review_board_dashboard():
     return render_template(
         'reviewboard_dashboard.html',
         users=users,
-        review_url_generator=lambda review_id: '%s/r/%s' % (config.url, review_id)
+        review_url_generator=lambda review_id: '%s/r/%s' % (config.url, review_id),
+        team_name=config.team_name
     )
 
 
 @app.route('/tickets')
 def tickets():
-    trac.authenticate()
     return render_template('tickets.html',
-                           sort=sorted,
-                           ticket_cmp=lambda x, y: int(x.priority[0]),
-                           users=[trac.User(username) for username in config.users])
+                           team_name=config.team_name,
+                           users=sorted(
+                               [trac.User(username) for username in config.users],
+                               key=lambda x: x.username))

@@ -1,37 +1,39 @@
 <html>
-  <head>
-    <title>Reviewboard Dashboard</title>
-    <link href="http://twitter.github.com/bootstrap/assets/css/bootstrap.css" rel="stylesheet">
-    <link href="http://twitter.github.com/bootstrap/assets/css/bootstrap-responsive.css" rel="stylesheet">
-  </head>
-  <body>
-    <div class="container page pagination-centered">
-      <div class='hero-unit'>
-	<h2>Reviewboard Dashboard!</h2>
-      </div>
-      {% for user in users %}
-      <h3><a href="/tickets#{{ user.username }}">{{ user.username }}</a></h3>
-      <table class="table table-hover">
-	<tr>
-	  <th>Id</th>
-	  <th>Submitter</th>
-	  <th>Primary</th>
-	  <th>Summary</th>
-          <th>Status</th>
-	</tr>
-	{% for review_request in user.primary_reviews %}
-	<tr>
-	  <td>
-	    <a href={{ review_url_generator(review_request.id) }}>{{ review_request.id }}</a>
-	  </td>
-	  <td>{{ review_request.submitter.username }}</td>
-	  <td>{{ review_request.primary_reviewer.username }}</td>
-	  <td>{{ review_request.summary }}</td>
-          <td>{{ review_request.ship_it_status }}</td>
-	</tr>
-	{% endfor %}
-      </table>
-      {% endfor %}
-    </div>
-  </body>
+    <head>
+        <title>{{ team_name }} Reviews</title>
+        <link href="http://twitter.github.com/bootstrap/assets/css/bootstrap.css" rel="stylesheet">
+        <link href="http://twitter.github.com/bootstrap/assets/css/bootstrap-responsive.css" rel="stylesheet">
+    </head>
+    <body>
+        <div class="container page pagination-centered">
+            <div class='hero-unit'>
+                <h2>{{ team_name }} Reviews!</h2>
+            </div>
+            {% for user in users %}
+                <h3>
+                    <a href="/tickets#{{ user.username }}">{{ user.username }}</a>
+                </h3>
+                <table class="table table-hover">
+                    <tr>
+                        <th>Id</th>
+                        <th>Submitter</th>
+                        <th>Primary</th>
+                        <th>Summary</th>
+                        <th>Status</th>
+                    </tr>
+                    {% for review_request in user.primary_reviews %}
+                        <tr>
+                            <td>
+                                <a href={{ review_url_generator(review_request.id) }}>{{ review_request.id }}</a>
+                            </td>
+                            <td>{{ review_request.submitter.username }}</td>
+                            <td>{{ review_request.primary_reviewer.username }}</td>
+                            <td>{{ review_request.summary }}</td>
+                            <td>{{ review_request.ship_it_status }}</td>
+                        </tr>
+                    {% endfor %}
+                </table>
+            {% endfor %}
+        </div>
+    </body>
 </html>
