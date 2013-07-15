@@ -19,7 +19,7 @@
 	  <th>Summary</th>
           <th>Status</th>
 	</tr>
-	{% for review_request in user.primary_reviews %}
+	{% for review_request in user.pending_primary_reviews %}
 	<tr>
 	  <td>
 	    <a href={{ review_url_generator(review_request.id) }}>{{ review_request.id }}</a>

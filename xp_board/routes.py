@@ -8,7 +8,7 @@ from . import config
 def review_board_dashboard():
     users = sorted(
         models.User.list_by_column_values(config.users, 'username'),
-        key=lambda user: -len(user.primary_reviews)
+        key=lambda user: -len(user.pending_primary_reviews)
     )
     return render_template(
         'reviewboard_dashboard.html',
