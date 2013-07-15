@@ -3,8 +3,10 @@
     <Title>{{ team_name }} Tickets</title>
     <link href="http://twitter.github.com/bootstrap/assets/css/bootstrap.css" rel="stylesheet">
     <link href="http://twitter.github.com/bootstrap/assets/css/bootstrap-responsive.css" rel="stylesheet">
+    <link href="static/css/style.css" rel="stylesheet">
     <script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
     <script src="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/js/bootstrap.min.js"></script>
+    <script src="static/js/jquery.tablesorter.min.js"></script>
   </head>
   <body>
     <div class="container page pagination-centered">
@@ -25,56 +27,66 @@
       </div>
       {% for user in users %}
       <div>
-        <h3>
-          <a name="{{ user.username }}" href="#{{ user.username }}">{{ user.username }}</a>
-          <button class="btn" type="button">
-            <a href="/#{{ user.username }}">Reviews</a>
-          </button>
-        </h3>
+        <div class="navbar table-header">
+          <div class="navbar-inner">
+            <a class="brand owner-title" name="{{ user.username }}" href="#{{ user.username }}">{{ user.username }}</a>
+            <ul class="nav">
+              <li><a href="/reviews/#{{ user.username }}">Reviews</a></li>
+            </ul>
+          </div>
+        </div>
         <h4>code reviews</h4>
-        <table class="table table-hover">
-          <tr>
-            <th>Id</th>
-            <th>Submitter</th>
-            <th>Primary</th>
-            <th>Summary</th>
-            <th>Status</th>
-          </tr>
-          {% for review_request in user.pending_primary_reviews %}
-          <tr>
-            <td>
-              <a href={{ review_url_generator(review_request.id) }}>{{ review_request.id }}</a>
-            </td>
-            <td>{{ review_request.submitter.username }}</td>
-            <td>{{ review_request.primary_reviewer.username }}</td>
-            <td>{{ review_request.summary }}</td>
-            <td>{{ review_request.ship_it_status }}</td>
-          </tr>
-          {% endfor %}
+        <table class="table table-hover sortable">
+          <thead>
+            <tr>
+              <th>Id</th>
+              <th>Submitter</th>
+              <th>Primary</th>
+              <th>Summary</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for review_request in user.pending_primary_reviews %}
+            <tr>
+              <td>
+                <a href={{ review_url_generator(review_request.id) }}>{{ review_request.id }}</a>
+              </td>
+              <td>{{ review_request.submitter.username }}</td>
+              <td>{{ review_request.primary_reviewer.username }}</td>
+              <td>{{ review_request.summary }}</td>
+              <td>{{ review_request.ship_it_status }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
         </table>
         {% for resolution, tickets in user.pending_tickets_by_status.iteritems() %}
         <h4>{{ resolution }}</h4>
-        <table class="table table-hover">
-          <tr>
-            <th>Ticket #</th>
-            <th>Priority</th>
-            <th>Summary</th>
-            <th>Reviews</th>
-          </tr>
-          {% for ticket in tickets %}
-          <tr>
-            <td>
-              <a href="https://trac.yelpcorp.com/ticket/{{ ticket.id }}">{{ ticket.id }}</a>
-            </td>
-            <td>{{ ticket.priority }}</td>
-            <td>{{ ticket.summary }}</td>
-            <td>
-              {% for review_request in ticket.review_requests %}
-              <a href="https://reviewboard.yelpcorp.com/r/{{ review_request.id }}"> {{ review_request.id }} </a>
-              {% endfor %}
-            </td>
-          </tr>
-          {% endfor %}
+        <table class="table table-hover sortable">
+          <thead>
+            <tr>
+              <th class="ticket">Ticket #</th>
+              <th>Priority</th>
+              <th>Summary</th>
+              <th>Reviews</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for ticket in tickets %}
+            <tr>
+              <td>
+                <a href="https://trac.yelpcorp.com/ticket/{{ ticket.id }}">{{ ticket.id }}</a>
+              </td>
+              <td>{{ ticket.priority }}</td>
+              <td>{{ ticket.summary }}</td>
+              <td>
+                {% for review_request in ticket.review_requests %}
+                <a href="https://reviewboard.yelpcorp.com/r/{{ review_request.id }}"> {{ review_request.id }} </a>
+                {% endfor %}
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
           <table class="table table-hover">
           </table>
           {% endfor %}
@@ -83,7 +95,8 @@
     </div>
     <script type="text/javascript">
       $(document).ready(function () {
-      $('.dropdown-toggle').dropdown();
+        $('.dropdown-toggle').dropdown();
+        $('table.sortable').tablesorter();
       });
     </script>
   </body>
