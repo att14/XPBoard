@@ -25,8 +25,8 @@ class TracClient(object):
     def __init__(self, username, password):
         self.server_proxy = ServerProxy(
             self.server_proxy_format.format(
-                username=config.username,
-                password=config.password
+                username=username,
+                password=password
             )
         )
 
@@ -35,3 +35,6 @@ class TracClient(object):
 
     def get_ticket(self, trac_id):
         return Ticket(*self.server_proxy.ticket.get(trac_id))
+
+
+client = TracClient(config.username, config.password)

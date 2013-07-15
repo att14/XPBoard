@@ -174,6 +174,9 @@ class Ticket(db.Model):
     owner_id = db.Column(db.Integer, db.ForeignKey("user.id"))
 
     status = db.Column(db.String(length=32))
+    resolution = db.Column(db.String(length=32))
+    summary = db.Column(db.String(length=256))
+    component = db.Column(db.String(length=64))
 
     owner = db.relationship(
         User,
