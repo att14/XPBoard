@@ -35,24 +35,28 @@
         </div>
 	  </div>
       <table class="table table-hover sortable">
-        <tr>
-          <th>Id</th>
-          <th>Submitter</th>
-          <th>Primary</th>
-          <th>Summary</th>
-          <th>Status</th>
-        </tr>
-        {% for review_request in user.primary_reviews %}
-        <tr>
-          <td>
-            <a href={{ review_url_generator(review_request.id) }}>{{ review_request.id }}</a>
-          </td>
-          <td>{{ review_request.submitter.username }}</td>
-          <td>{{ review_request.primary_reviewer.username }}</td>
-          <td>{{ review_request.summary }}</td>
-          <td>{{ review_request.ship_it_status }}</td>
-        </tr>
-        {% endfor %}
+		<thead>
+          <tr>
+            <th>Id</th>
+            <th>Submitter</th>
+            <th>Primary</th>
+            <th>Summary</th>
+            <th>Status</th>
+          </tr>
+		</thead>
+		<tbody>
+          {% for review_request in user.primary_reviews %}
+          <tr>
+            <td>
+              <a href={{ review_url_generator(review_request.id) }}>{{ review_request.id }}</a>
+            </td>
+            <td>{{ review_request.submitter.username }}</td>
+            <td>{{ review_request.primary_reviewer.username }}</td>
+            <td>{{ review_request.summary }}</td>
+            <td>{{ review_request.ship_it_status }}</td>
+          </tr>
+          {% endfor %}
+		</tbody>
       </table>
       {% endfor %}
     </div>
