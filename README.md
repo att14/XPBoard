@@ -1,4 +1,4 @@
 XPBoard
 =======
 
-Extreme Programming Board
+https://trac.yelpcorp.com/login/rpc

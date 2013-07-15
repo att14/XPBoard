@@ -3,8 +3,10 @@
     <title>{{ team_name }} Reviews</title>
     <link href="http://twitter.github.com/bootstrap/assets/css/bootstrap.css" rel="stylesheet">
     <link href="http://twitter.github.com/bootstrap/assets/css/bootstrap-responsive.css" rel="stylesheet">
+    <link href="static/css/style.css" rel="stylesheet">
     <script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
     <script src="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/js/bootstrap.min.js"></script>
+    <script src="static/js/jquery.tablesorter.min.js"></script>
   </head>
   <body>
     <div class="container page pagination-centered">
@@ -17,16 +19,19 @@
             <a class="dropdown-toggle" data-toggle="dropdown" href="#">Members<b class="caret"></b></a>
             <ul class="dropdown-menu">
               {% for user in users %}
-              <li><a href="#{{ user.username}}">{{ user.username }}</a></li>
+              <li><a href="#{{ user.username}}">{{ user.username }} {{ length(user.primary_reviews) }}</a></li>
               {% endfor %}
             </ul>
           </li>
         </ul>
       </div>
       {% for user in users %}
-      <h3>
-        <div>
-          <a name="{{ user.username }}" href="#{{ user.username }}">{{ user.username }}</a>
+      <div class="navbar table-header">
+        <div class="navbar-inner">
+          <a class="brand owner-title" name="{{ user.username }}" href="#{{ user.username }}">{{ user.username }}</a>
+          <ul class="nav">
+            <li><a href="/tickets#{{ user.username }}">Tickets</a></li>
+          </ul>
         </div>
         <div>
           <button class="btn" type="button">
@@ -34,7 +39,7 @@
           </button>
         </div>
       </h3>
-      <table class="table table-hover">
+      <table class="table table-hover sortable">
         <tr>
           <th>Id</th>
           <th>Submitter</th>
@@ -58,7 +63,8 @@
     </div>
     <script type="text/javascript">
       $(document).ready(function () {
-      $('.dropdown-toggle').dropdown();
+        $('.dropdown-toggle').dropdown();
+        $('table.sortable').tablesorter();
       });
     </script>
   </body>

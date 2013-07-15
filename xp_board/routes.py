@@ -13,9 +13,10 @@ def review_board_dashboard():
     )
     return render_template(
         'reviewboard_dashboard.html',
-        users=users,
+        users=sorted(users, key=lambda x: len(x.primary_reviews), reverse=True),
         review_url_generator=lambda review_id: '%s/r/%s' % (config.url, review_id),
-        team_name=config.team_name
+        team_name=config.team_name,
+        length=len
     )
 
 
