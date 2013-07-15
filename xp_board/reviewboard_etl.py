@@ -5,6 +5,7 @@ from . import config
 from . import etl
 from . import models
 from .reviewboard_client import ReviewboardClient
+from .reviewboard_client import UserNotFoundError
 
 
 reviewboard_client = ReviewboardClient.create_using_reviewboard_url(
@@ -127,5 +128,8 @@ class UserETL(etl.MultipleExtractETL):
 
     @classmethod
     def execute_one(cls, username):
-        return models.User.maybe_find_user_by_username(username) or \
-            super(UserETL, cls).execute_one(username)
+        try:
+            return models.User.maybe_find_user_by_username(username) or \
+                super(UserETL, cls).execute_one(username)
+        except UserNotFoundError:
+            models.User.find_user_by_username(username, create_if_missing=True)

@@ -20,6 +20,12 @@ class UserTransformer(etl.Transformer):
         	getattr(ticket, self.attribute_name)
         )
 
+class PriorityTransformer(etl.Transformer):
+
+    @classmethod
+    def transform(cls, ticket):
+        return int(ticket.priority[0])
+
 
 class TicketETL(etl.ETL):
 
@@ -32,8 +38,7 @@ class TicketETL(etl.ETL):
         'status': None,
         'resolution': None,
         'summary': None,
-        #'priority': None,
-        #'time_changed': 'changetime',
+        'priority': PriorityTransformer,
         'component': None
     }
 

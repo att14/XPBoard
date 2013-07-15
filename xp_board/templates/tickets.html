@@ -1,62 +1,62 @@
 <html>
-    <head>
-        <Title>{{ team_name }} Tickets</title>
-        <link href="http://twitter.github.com/bootstrap/assets/css/bootstrap.css" rel="stylesheet">
-        <link href="http://twitter.github.com/bootstrap/assets/css/bootstrap-responsive.css" rel="stylesheet">
-        <script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
-        <script src="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/js/bootstrap.min.js"></script>
-    </head>
-    <body>
-        <div class="container page pagination-centered">
-            <div class="nav-collapse collapse navbar-inverse-collapse">
-                <ul class="nav nav-tabs">
-                    <li class="active">
-                        <a class="brand" href="#">{{ team_name }} Tickets</a>
-                    </li>
-                    <li class="dropdown">
-                        <a class="dropdown-toggle" data-toggle="dropdown" href="#">Members<b class="caret"></b></a>
-                        <ul class="dropdown-menu">
-                            {% for user in users %}
-                                <li><a href="#{{ user.username}}">{{ user.username }}</a></li>
-                            {% endfor %}
-                        </ul>
-                    </li>
-                </ul>
-            </div>
-            {% for user in users %}
-                <div>
-                    <h3>
-                        <a name="{{ user.username }}" href="#{{ user.username }}">{{ user.username }}</a>
-                        <button class="btn" type="button">
-                            <a href="/#{{ user.username }}">Reviews</a>
-                        </button>
-                    </h3>
-                    {% for resolution in user.extract() %}
-                        <h4>{{ resolution.header }}</h4>
-                        <table class="table table-hover">
-                            <tr>
-                                <th>Ticket #</th>
-                                <th>Priority</th>
-                                <th>Summary</th>
-                            </tr>
-                            {% for ticket in resolution.tickets %}
-                                <tr>
-                                    <td>
-                                        <a href="https://trac.yelpcorp.com/ticket/{{ ticket.number }}">{{ ticket.number }}</a>
-                                    </td>
-                                    <td>{{ ticket.priority }}</td>
-                                    <td>{{ ticket.summary }}</td>
-                                </tr>
-                            {% endfor %}
-                        </table>
-                    {% endfor %}
-                </div>
-            {% endfor %}
-        </div>
-        <script type="text/javascript">
-            $(document).ready(function () {
-                $('.dropdown-toggle').dropdown();
-            });
-        </script>
-    </body>
+  <head>
+    <Title>{{ team_name }} Tickets</title>
+    <link href="http://twitter.github.com/bootstrap/assets/css/bootstrap.css" rel="stylesheet">
+    <link href="http://twitter.github.com/bootstrap/assets/css/bootstrap-responsive.css" rel="stylesheet">
+    <script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
+    <script src="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/js/bootstrap.min.js"></script>
+  </head>
+  <body>
+    <div class="container page pagination-centered">
+      <div class="nav-collapse collapse navbar-inverse-collapse">
+        <ul class="nav nav-tabs">
+          <li class="active">
+            <a class="brand" href="#">{{ team_name }} Tickets</a>
+          </li>
+          <li class="dropdown">
+            <a class="dropdown-toggle" data-toggle="dropdown" href="#">Members<b class="caret"></b></a>
+            <ul class="dropdown-menu">
+              {% for user in users %}
+              <li><a href="#{{ user.username}}">{{ user.username }}</a></li>
+              {% endfor %}
+            </ul>
+          </li>
+        </ul>
+      </div>
+      {% for user in users %}
+      <div>
+        <h3>
+          <a name="{{ user.username }}" href="#{{ user.username }}">{{ user.username }}</a>
+          <button class="btn" type="button">
+            <a href="/#{{ user.username }}">Reviews</a>
+          </button>
+        </h3>
+        {% for resolution, tickets in user.pending_tickets_by_status.iteritems() %}
+        <h4>{{ resolution }}</h4>
+        <table class="table table-hover">
+          <tr>
+            <th>Ticket #</th>
+            <th>Priority</th>
+            <th>Summary</th>
+          </tr>
+          {% for ticket in tickets %}
+          <tr>
+            <td>
+              <a href="https://trac.yelpcorp.com/ticket/{{ ticket.number }}">{{ ticket.id }}</a>
+            </td>
+            <td>{{ ticket.priority }}</td>
+            <td>{{ ticket.summary }}</td>
+          </tr>
+          {% endfor %}
+        </table>
+        {% endfor %}
+      </div>
+      {% endfor %}
+    </div>
+    <script type="text/javascript">
+      $(document).ready(function () {
+        $('.dropdown-toggle').dropdown();
+      });
+    </script>
+  </body>
 </html>

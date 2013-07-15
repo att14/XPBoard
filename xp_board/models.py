@@ -79,6 +79,15 @@ class User(db.Model):
     def full_name(self):
         return '%s %s' % (self.first_name, self.last_name)
 
+    @property
+    def pending_tickets_by_status(self):
+        pending_tickets = self.owned_tickets.filter(Ticket.status != 'closed').all()
+        status_to_tickets = {}
+        for ticket in pending_tickets:
+            status_to_tickets.setdefault(ticket.status, []).append(ticket)
+
+        return status_to_tickets
+
     def levenshtein_on_names(self, string):
         if not string:
             return 1000
@@ -177,11 +186,12 @@ class Ticket(db.Model):
     resolution = db.Column(db.String(length=32))
     summary = db.Column(db.String(length=256))
     component = db.Column(db.String(length=64))
+    priority = db.Column(db.Integer)
 
     owner = db.relationship(
         User,
         primaryjoin='Ticket.owner_id == User.id',
-        backref=orm.backref('owned_tickets', uselist=True),
+        backref=orm.backref('owned_tickets', uselist=True, lazy='dynamic'),
         uselist=False
     )
     reporter = db.relationship(

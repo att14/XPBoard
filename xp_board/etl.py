@@ -90,6 +90,7 @@ class MultipleExtractETL(ETL):
         self.post_transform()
         return self.load()
 
+
 class ModelLoader(Loader):
 
     def __init__(self, model_class, upsert_key='id', model_column_name=None):
