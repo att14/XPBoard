@@ -4,11 +4,24 @@
         <link href="http://twitter.github.com/bootstrap/assets/css/bootstrap.css" rel="stylesheet">
         <link href="http://twitter.github.com/bootstrap/assets/css/bootstrap-responsive.css" rel="stylesheet">
         <script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
+        <script src="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/js/bootstrap.min.js"></script>
     </head>
     <body>
         <div class="container page pagination-centered">
-            <div class='hero-unit'>
-                <h2>{{ team_name }} Tickets!</h2>
+            <div class="nav-collapse collapse navbar-inverse-collapse">
+                <ul class="nav nav-tabs">
+                    <li class="active">
+                        <a class="brand" href="#">{{ team_name }} Tickets</a>
+                    </li>
+                    <li class="dropdown">
+                        <a class="dropdown-toggle" data-toggle="dropdown" href="#">Members<b class="caret"></b></a>
+                        <ul class="dropdown-menu">
+                            {% for user in users %}
+                                <li><a href="#{{ user.username}}">{{ user.username }}</a></li>
+                            {% endfor %}
+                        </ul>
+                    </li>
+                </ul>
             </div>
             {% for user in users %}
                 <div>
@@ -37,5 +50,10 @@
                 </div>
             {% endfor %}
         </div>
+        <script type="text/javascript">
+            $(document).ready(function () {
+                $('.dropdown-toggle').dropdown();
+            });
+        </script>
     </body>
 </html>
