@@ -5,7 +5,7 @@ from . import models
 from . import config
 
 
-@app.route('/')
+@app.route('/reviews')
 def review_board_dashboard():
     users = sorted(
         models.User.list_by_column_values(config.users, 'username'),
