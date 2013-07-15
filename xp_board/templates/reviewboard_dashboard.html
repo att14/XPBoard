@@ -19,7 +19,7 @@
             <a class="dropdown-toggle" data-toggle="dropdown" href="#">Members<b class="caret"></b></a>
             <ul class="dropdown-menu">
               {% for user in users %}
-              <li><a href="#{{ user.username}}">{{ user.username }}</a></li>
+              <li><a href="#{{ user.username}}">{{ user.username }} {{ length(user.primary_reviews) }}</a></li>
               {% endfor %}
             </ul>
           </li>
