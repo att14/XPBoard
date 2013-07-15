@@ -1,3 +1,6 @@
+from . import models
+
+
 class Extractor(object):
 
     def extract(self, identifier):
@@ -82,10 +85,15 @@ class MultipleExtractETL(ETL):
     def transform(self):
         self.transformed.update(
             dict(
-                (key, transformer.transform(self.raw_data))
+                (key, self.apply_transformer(key, transformer))
                 for key, transformer in self.transformers.iteritems()
             )
         )
+
+    def apply_transformer(self, key, transformer):
+        if not transformer:
+            return self.raw_data[key]
+        return transformer.transform(self.raw_data)
 
     def load(self):
         return self.loader.load(self.transformed)
@@ -99,14 +107,18 @@ class ModelLoader(Loader):
         self.model_column_upsert_key = model_column_name or self.transformed_upsert_key
 
     def load(self, transformed):
-        models = self.model_class.list_by_column_values(
+        model_instances = self.model_class.list_by_column_values(
             [transformed[self.transformed_upsert_key]],
             column_name=self.model_column_upsert_key
         )
-        if not models: return self.model_class(**transformed)
+        if not model_instances:
+            model = self.model_class(**transformed)
+        else:
+            model, = model_instances
+            for attribute_name, value in transformed.iteritems():
+                setattr(model, attribute_name, value)
 
-        model, = models
-        for attribute_name, value in transformed.iteritems():
-            setattr(model, attribute_name, value)
+        models.db.session.add(model)
+        models.db.session.commit()
         return model
 
