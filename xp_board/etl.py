@@ -114,3 +114,14 @@ class ModelLoader(Loader):
         models.db.session.commit()
         return model
 
+
+class FieldTransform(Transformer):
+
+    def __init__(self, field_name):
+        self.field_name = field_name
+
+    def transform(self, item_resource):
+        return self._transform(item_resource.fields)
+
+    def _transform(self, fields):
+        return fields[self.field_name]

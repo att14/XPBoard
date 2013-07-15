@@ -110,6 +110,14 @@ ReviewRequestToReviewer = db.Table(
 )
 
 
+ReviewRequestToTicket = db.Table(
+    'review_request_to_ticket',
+    db.Model.metadata,
+    db.Column('review_request_id', db.Integer, db.ForeignKey("review_request.id")),
+    db.Column('ticket_id', db.Integer, db.ForeignKey("ticket.id")),
+)
+
+
 class ReviewRequest(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
@@ -194,9 +202,16 @@ class Ticket(db.Model):
         backref=orm.backref('owned_tickets', uselist=True, lazy='dynamic'),
         uselist=False
     )
+
     reporter = db.relationship(
         User,
         primaryjoin='Ticket.reporter_id == User.id',
         backref='reported_tickets',
         uselist=False
+    )
+
+    review_requests = db.relationship(
+        ReviewRequest,
+        secondary=ReviewRequestToTicket,
+        backref='tickets'
     )

@@ -1,5 +1,7 @@
 from rbtools.api.client import RBClient
 
+from . import config
+
 
 class UserNotFoundError(Exception): pass
 
@@ -33,3 +35,10 @@ class ReviewboardClient(object):
                 user_list_resource = user_list_resource.get_next()
         except StopIteration:
             raise UserNotFoundError()
+
+
+client = ReviewboardClient.create_using_reviewboard_url(
+    config.url,
+    username=config.username,
+    password=config.password
+)

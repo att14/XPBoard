@@ -1,6 +1,6 @@
 from . import etl
 from . import models
-from . import reviewboard_etl
+from . import user_etl
 from . import trac_client
 
 
@@ -16,9 +16,10 @@ class UserTransformer(etl.Transformer):
         self.attribute_name = attribute_name
 
     def transform(self, ticket):
-        return reviewboard_etl.UserETL.execute_one(
+        return user_etl.UserETL.execute_one(
         	getattr(ticket, self.attribute_name)
         )
+
 
 class PriorityTransformer(etl.Transformer):
 

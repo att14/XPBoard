@@ -38,14 +38,20 @@
             <th>Ticket #</th>
             <th>Priority</th>
             <th>Summary</th>
+            <th>Reviews</th>
           </tr>
           {% for ticket in tickets %}
           <tr>
             <td>
-              <a href="https://trac.yelpcorp.com/ticket/{{ ticket.number }}">{{ ticket.id }}</a>
+              <a href="https://trac.yelpcorp.com/ticket/{{ ticket.id }}">{{ ticket.id }}</a>
             </td>
             <td>{{ ticket.priority }}</td>
             <td>{{ ticket.summary }}</td>
+            <td>
+              {% for review_request in ticket.review_requests %}
+              <a href="https://reviewboard.yelpcorp.com/r/{{ review_request.id }}"> {{ review_request.id }} </a>
+              {% endfor %}
+            </td>
           </tr>
           {% endfor %}
         </table>
