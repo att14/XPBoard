@@ -40,3 +40,4 @@ xp_board/config.py
 xp_board/database.db
 
 ENV
+refresh_review_requests.log

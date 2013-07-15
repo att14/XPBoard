@@ -51,6 +51,9 @@ class ETL(object):
             )
         )
 
+    def post_transform(self):
+        pass
+
     def load(self):
         return self.loader.load(self.transformed)
 
@@ -62,12 +65,18 @@ class MultipleExtractETL(ETL):
         for data in cls.extractor.extract(identifiers):
             yield cls(data).execute_transform_load()
 
+    @classmethod
+    def execute_one(cls, identifiers):
+        extracted = cls.extractor.extract(identifiers)
+        return cls(extracted).execute_transform_load()
+
     def __init__(self, raw_data):
         self.raw_data = raw_data
         self.transformed = {}
 
     def execute_transform_load(self):
         self.transform()
+        self.post_transform()
         return self.load()
 
     def transform(self):
@@ -84,14 +93,19 @@ class MultipleExtractETL(ETL):
 
 class ModelLoader(Loader):
 
-    def __init__(self, model_class, upsert_key='id'):
+    def __init__(self, model_class, upsert_key='id', model_column_name=None):
         self.model_class = model_class
-        self.upsert_key = upsert_key
+        self.transformed_upsert_key = upsert_key
+        self.model_column_upsert_key = model_column_name or self.transformed_upsert_key
 
     def load(self, transformed):
-        model = self.model_class.find_by_id(transformed[self.upsert_key])
-        if not model: return self.model_class(**transformed)
+        models = self.model_class.list_by_column_values(
+            [transformed[self.transformed_upsert_key]],
+            column_name=self.model_column_upsert_key
+        )
+        if not models: return self.model_class(**transformed)
 
+        model, = models
         for attribute_name, value in transformed.iteritems():
             setattr(model, attribute_name, value)
         return model
