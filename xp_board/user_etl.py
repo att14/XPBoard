@@ -1,3 +1,5 @@
+import logging
+
 from . import etl
 from . import reviewboard_client
 from . import models
@@ -22,9 +24,11 @@ class UserETL(etl.MultipleExtractETL):
     loader = etl.ModelLoader(models.User, upsert_key='username')
 
     @classmethod
-    def execute_one(cls, username):
+    def execute_one(cls, username, force_refresh=False):
         try:
+            if force_refresh: return super(UserETL, cls).execute_one(username)
             return models.User.maybe_find_user_by_username(username) or \
                 super(UserETL, cls).execute_one(username)
         except reviewboard_client.UserNotFoundError:
-            models.User.find_user_by_username(username, create_if_missing=True)
+            logging.warning("Unable to find user {0} in reviewboard. Creating user anyway".format(username))
+            return models.User.find_user_by_username(username, create_if_missing=True)
