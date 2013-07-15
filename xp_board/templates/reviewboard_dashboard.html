@@ -23,6 +23,13 @@
                     </li>
                 </ul>
             </div>
+            <table class="table">
+                <tr>
+                    {% for user in users %}
+                        <td>{{ user.username }} {{ length(user.primary_reviews) }}</td>
+                    {% endfor %}
+                </tr>
+            </table>
             {% for user in users %}
                 <h3>
                     <div>
