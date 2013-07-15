@@ -1,0 +1,41 @@
+<html>
+    <head>
+        <Title>Tickets</title>
+        <link href="http://twitter.github.com/bootstrap/assets/css/bootstrap.css" rel="stylesheet">
+        <link href="http://twitter.github.com/bootstrap/assets/css/bootstrap-responsive.css" rel="stylesheet">
+        <script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
+    </head>
+    <body>
+        <div class="container page pagination-centered">
+            <div class='hero-unit'>
+                <h2>Look what I'm working on :D</h2>
+            </div>
+            {% for user in users %}
+                <div>
+                    <h3>
+                        <a name="{{ user.username }}" href="#{{ user.username }}">{{ user.username }}</a>
+                    </h3>
+                    {% for resolution in user.extract() %}
+                        <h4>{{ resolution.header }}</h4>
+                        <table class="table table-hover">
+                            <tr>
+                                <th>Ticket #</th>
+                                <th>Priority</th>
+                                <th>Summary</th>
+                            </tr>
+                            {% for ticket in sort(resolution.tickets, cmp=ticket_cmp) %}
+                                <tr>
+                                    <td>
+                                        <a href="https://trac.yelpcorp.com/ticket/{{ ticket.number }}">{{ ticket.number }}</a>
+                                    </td>
+                                    <td>{{ ticket.priority }}</td>
+                                    <td>{{ ticket.summary }}</td>
+                                </tr>
+                            {% endfor %}
+                        </table>
+                    {% endfor %}
+                </div>
+            {% endfor %}
+        </div>
+    </body>
+</html>
