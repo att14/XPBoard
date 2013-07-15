@@ -130,14 +130,22 @@ class ReviewRequest(db.Model):
 
     @property
     def has_ship_it(self):
-        return any(code_review.ship_it for code_review in self.code_reviews)
+	return any(code_review.ship_it for code_review in self.code_reviews.all())
+
+    @property
+    def has_ship_it_from_primary(self):
+	return self.code_reviews.filter(
+	    CodeReview.reviewer_id == self.primary_reviewer_id
+	).filter(
+	    CodeReview.ship_it == True
+	).count() > 0
 
     @property
     def ship_it_status(self):
         if self.status == 'submitted':
             return self.status
 
-        if self.has_ship_it:
+	if self.has_ship_it_from_primary:
             return 'ship_it'
 
         return self.status
@@ -173,12 +181,12 @@ class CodeReview(db.Model):
 
     review_request = db.relationship(
         ReviewRequest,
-        backref=orm.backref('code_reviews', uselist=True),
+	backref=orm.backref('code_reviews', uselist=True, lazy='dynamic'),
         uselist=False
     )
     reviewer = db.relationship(
         User,
-        backref=orm.backref('code_reviews', uselist=True),
+	backref=orm.backref('code_reviews', uselist=True, lazy='dynamic'),
         uselist=False
     )
 
