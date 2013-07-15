@@ -84,7 +84,7 @@ class User(db.Model):
         pending_tickets = self.owned_tickets.filter(Ticket.status != 'closed').all()
         status_to_tickets = {}
         for ticket in pending_tickets:
-            status_to_tickets.setdefault(ticket.status, []).append(ticket)
+            status_to_tickets.setdefault(ticket.completion_status, []).append(ticket)
 
         return status_to_tickets
 
@@ -195,6 +195,20 @@ class Ticket(db.Model):
     summary = db.Column(db.String(length=256))
     component = db.Column(db.String(length=64))
     priority = db.Column(db.Integer)
+
+    @property
+    def completion_status(self):
+        if self.status == 'closed':
+            return self.status
+
+        if self.review_requests:
+            # TODO: do something better here
+            review_request = self.review_requests[0]
+            if review_request.ship_it_status != 'pending':
+                return review_request.ship_it_status
+            return 'in_review'
+
+        return self.status
 
     owner = db.relationship(
         User,

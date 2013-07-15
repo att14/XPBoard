@@ -26,3 +26,19 @@ def tickets():
         team_name=config.team_name,
         users=models.User.list_by_column_values(config.users, 'username')
     )
+
+@app.route('/board')
+def board():
+    return render_template(
+        'board.html',
+        users=models.User.list_by_column_values(config.users, 'username')
+    )
+
+@app.route('/status')
+def status():
+    return render_template(
+        'status.html',
+        review_url_generator=lambda review_id: '%s/r/%s' % (config.url, review_id),
+        users=models.User.list_by_column_values(config.users, 'username'),
+        team_name=config.team_name,
+    )

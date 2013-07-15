@@ -10,7 +10,7 @@ from . import user_etl
 
 class ReviewRequestExtractor(etl.Extractor):
 
-    def __init__(self, number_of_days_to_look_back=14, max_results=200):
+    def __init__(self, number_of_days_to_look_back=100, max_results=200):
         self.number_of_days_to_look_back = number_of_days_to_look_back
         self.max_results = max_results
 
