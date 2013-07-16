@@ -9,22 +9,24 @@
     <script src="static/js/jquery.tablesorter.min.js"></script>
   </head>
   <body>
-    <div class="container page pagination-centered">
-      <div class="nav-collapse collapse navbar-inverse-collapse">
-        <ul class="nav nav-tabs">
-          <li class="active">
-            <a class="brand" href="#">{{ team_name }} Reviews</a>
-          </li>
-          <li class="dropdown">
-            <a class="dropdown-toggle" data-toggle="dropdown" href="#">Members<b class="caret"></b></a>
-            <ul class="dropdown-menu">
-              {% for user in users %}
-              <li><a href="#{{ user.username}}">{{ user.username }} {{ length(user.primary_reviews) }}</a></li>
-              {% endfor %}
-            </ul>
-          </li>
-        </ul>
+    <div class="navbar navbar-fixed-top main-nav">
+      <div class="navbar-inner">
+        <div class="container">
+          <a class="brand" href="#">{{ team_name }} Tickets</a>
+          <ul class="nav">
+            <li class="dropdown">
+              <a class="dropdown-toggle" data-toggle="dropdown" href="#">Members<b class="caret"></b></a>
+              <ul class="dropdown-menu">
+                {% for user in users %}
+                <li><a href="#{{ user.username}}">{{ user.username }}</a></li>
+                {% endfor %}
+              </ul>
+            </li>
+          </ul>
+        </div>
       </div>
+    </div>
+    <div class="container page pagination-centered">
       {% for user in users %}
       <div class="navbar table-header">
         <div class="navbar-inner">
