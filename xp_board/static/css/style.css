@@ -152,7 +152,7 @@ thead th.ticket {
 
 /* Start: Media Queries */
 
-// Note: Since media queries are more expensive to compute, try to use as few queries as possible.
+/* Note: Since media queries are more expensive to compute, try to use as few queries as possible. */
 
 @media (min-width: 980px) {
 
