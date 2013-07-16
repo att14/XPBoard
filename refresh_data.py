@@ -14,6 +14,7 @@ logging.basicConfig(
 
 
 if __name__ == '__main__':
+    logging.info(logic.trac.update_existing_active_tickets_for_users(config.users))
     for user in config.users:
         logging.info(
             "Refreshed {0} trac tickets at {1}.".format(
