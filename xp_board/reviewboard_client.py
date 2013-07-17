@@ -38,7 +38,7 @@ class ReviewboardClient(object):
 
 
 client = ReviewboardClient.create_using_reviewboard_url(
-    config.url,
+    config.reviewboard_url,
     username=config.username,
     password=config.password
 )
