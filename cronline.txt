@@ -1,2 +1,0 @@
-# m h  dom mon dow   command
-*/5 *   *   *   *    /nail/home/imalison/github/XPBoard/cronjob.sh

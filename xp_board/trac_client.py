@@ -20,13 +20,14 @@ class Ticket(object):
 
 class TracClient(object):
 
-    server_proxy_format = 'https://{username}:{password}@trac.yelpcorp.com/login/rpc'
+    server_proxy_format = 'https://{username}:{password}@{trac_url}/login/rpc'
 
-    def __init__(self, username, password):
+    def __init__(self, username, password, trac_url):
         self.server_proxy = ServerProxy(
             self.server_proxy_format.format(
                 username=username,
-                password=password
+                password=password,
+                trac_url=trac_url
             )
         )
 
@@ -37,4 +38,4 @@ class TracClient(object):
         return Ticket(*self.server_proxy.ticket.get(trac_id))
 
 
-client = TracClient(config.username, config.password)
+client = TracClient(config.username, config.password, config.trac_url)

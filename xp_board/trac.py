@@ -4,7 +4,9 @@ from xp_board import config
 
 
 statuses = {'assigned': 'Assigned', 'reopened': 'Reopened', 'new': 'Owned'}
-server = ServerProxy('https://%s:%s@trac.yelpcorp.com/login/rpc' % (config.username, config.password))
+server = ServerProxy('https://%s:%s@%s/login/rpc' % (config.username,
+                                                     config.password,
+                                                     config.trac_url))
 
 
 class User(object):
