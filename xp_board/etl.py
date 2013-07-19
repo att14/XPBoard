@@ -25,9 +25,9 @@ class ETL(object):
     def check_existing_value(self):
         return None
 
-    def execute(self):
+    def execute(self, force=False):
         self.extract()
-        return self.check_existing_value() or self.execute_transform_load()
+        return (not force and self.check_existing_value()) or self.execute_transform_load()
 
     def extract(self):
         self.raw_data = self.extractor.extract(self.identifier)
@@ -127,5 +127,3 @@ class FieldTransform(SingleKeySubTransform):
             item_resource.fields,
             transformed
         )
-
-

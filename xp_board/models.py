@@ -20,17 +20,14 @@ def find_by_id(cls, model_id):
 
 
 def update(self, **kwargs):
-    if type(self) == CodeReview:
-        import ipdb; ipdb.set_trace()
-        print
     for key, value in kwargs.iteritems():
         setattr(self, key, value)
+    db.session.add(self)
+    db.session.commit()
     return self
 
 def create(cls, **kwargs):
     model = cls().update(**kwargs)
-    db.session.add(model)
-    db.session.commit()
     return model
 
 

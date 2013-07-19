@@ -19,11 +19,13 @@ class TimeFieldTransform(etl.FieldTransform, etl.ItemGetterTransform):
 
 class ReviewerTransform(etl.SingleKeySubTransform):
 
-    def get_value(rb_review, transformed):
-        return user_etl.UserETL(
-            rb_review.get_user().fields['username']
-        ).maybe_execute(),
-
+    def get_value(self, rb_review, transformed):
+        try:
+            return user_etl.UserETL(
+                rb_review.get_user().fields['username']
+            ).maybe_execute()
+        except:
+            return None
 
 
 class CodeReviewETL(etl.ETL):

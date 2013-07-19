@@ -11,9 +11,10 @@ from . import user_etl
 
 class ReviewRequestByUsernameExtractor(object):
 
-    def __init__(self, number_of_days_to_look_back=200, max_results=200):
+    def __init__(self, number_of_days_to_look_back=14, max_results=100, **additional_filters):
         self.number_of_days_to_look_back = number_of_days_to_look_back
         self.max_results = max_results
+        self.additional_filters = additional_filters
 
     def extract(self, username):
         return reviewboard_client.client.get_review_requests(
@@ -22,7 +23,7 @@ class ReviewRequestByUsernameExtractor(object):
             last_updated_from=datetime.datetime.now() - datetime.timedelta(
                 days=self.number_of_days_to_look_back
             ),
-            status='pending'
+            **self.additional_filters
         )
 
 
@@ -67,9 +68,9 @@ class PrimaryReviewerTransform(etl.FieldTransform):
 
 class ReviewsTransform(etl.SingleKeySubTransform):
 
-    def transform(self, rb_review_request, transformed):
+    def get_value(self, rb_review_request, transformed):
         return [
-            code_review_etl.CodeReviewETL(rb_review)
+            code_review_etl.CodeReviewETL(rb_review).execute()
             for rb_review in rb_review_request.get_reviews()
         ]
 
@@ -118,7 +119,7 @@ def _check_for_existing_value(review_request_resource):
 
 class ReviewRequestETLByUser(etl.MultipleExtractETL):
 
-    extractor = ReviewRequestByUsernameExtractor()
+    extractor = ReviewRequestByUsernameExtractor(status="pending")
     transformer = ReviewRequestTransformer
     loader = etl.ModelLoader(models.ReviewRequest)
 
@@ -130,7 +131,7 @@ class ReviewRequestETLByUser(etl.MultipleExtractETL):
 class ReviewRequestETLByID(etl.ETL):
 
     extractor = ReviewRequestByIDExtractor()
-    transformers = ReviewRequestTransformer
+    transformer = ReviewRequestTransformer
     loader = ReviewRequestLoader
 
     def check_for_existing_value(self):
