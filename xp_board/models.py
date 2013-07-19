@@ -20,6 +20,9 @@ def find_by_id(cls, model_id):
 
 
 def update(self, **kwargs):
+    if type(self) == CodeReview:
+        import ipdb; ipdb.set_trace()
+        print
     for key, value in kwargs.iteritems():
         setattr(self, key, value)
     return self
@@ -155,6 +158,8 @@ class ReviewRequest(db.Model):
     description = db.Column(db.String(length=512))
     summary = db.Column(db.String(length=128))
     status = db.Column(db.String(length=20))
+
+    time_last_updated = db.Column(db.DateTime)
 
     @property
     def has_ship_it(self):

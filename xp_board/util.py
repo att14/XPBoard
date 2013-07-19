@@ -2,12 +2,14 @@ import datetime
 import logging
 import os
 
+from . import config
+
 
 logging.basicConfig(
     filename=os.path.join(
         os.path.dirname(os.path.realpath(__file__)),  "refresh_data.log"
     ),
-    level=logging.INFO
+    level=getattr(config, 'log_level', logging.INFO)
 )
 
 

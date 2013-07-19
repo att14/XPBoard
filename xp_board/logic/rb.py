@@ -1,11 +1,11 @@
 from .. import models
-from ..reviewboard_etl import ReviewRequestETL
-from ..reviewboard_etl import ReviewRequestETLByID
+from ..review_request_etl import ReviewRequestETLByID
+from ..review_request_etl import ReviewRequestETLByUser
 
 
 def refresh(usernames):
     for username in usernames:
-        for review_request in ReviewRequestETL.execute(username):
+        for review_request in ReviewRequestETLByUser.execute(username):
             yield review_request
 
 

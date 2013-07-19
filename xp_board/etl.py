@@ -1,111 +1,131 @@
-class Extractor(object):
-
-    def extract(self, identifier):
-        raise NotImplemented()
-
-
-class Transformer(object):
-
-    def transform(self, raw_data):
-        raise NotImplemented()
-
-
-class Loader(object):
-
-    def load(self, transformed):
-        raise NotImplemented()
-
-
 class ETL(object):
 
-    # `extractor` should be an object that knows how to fetch data to be
+    # `extractor` is an object that knows how to fetch data to be
     # transformed from a single argument.
     extractor = None
 
-    # `transformers` should be a dictionary of transformation objects that should be
-    # applied to extracted data.
-    transformers = None
+    # `transformer` is an object with a `transform` method that operates on the value
+    # returned by the extractor.
+    transformer = None
 
-    # `loader` should be a loader instance. It should operate on a dictionary of
-    # transformed values
+    # `loader` is an object with a `load` metheod that operates on the output of the
+    # transform phase.
+    loader = None
 
     def __init__(self, identifier):
         self.identifier = identifier
         self.raw_data = None
-        self.transformed = {}
+        self.transformed = None
+        self.loaded = None
+
+    def execute_transform_load(self):
+        self.transform()
+        return self.load()
+
+    def check_existing_value(self):
+        return None
 
     def execute(self):
         self.extract()
-        self.transform()
-        self.post_transform()
-        return self.load()
+        return self.check_existing_value() or self.execute_transform_load()
 
     def extract(self):
         self.raw_data = self.extractor.extract(self.identifier)
         return self.raw_data
 
     def transform(self):
-        self.transformed.update(
-            dict(
-                (key, self.apply_transformer(key, transformer))
-                for key, transformer in self.transformers.iteritems()
-            )
-        )
-
-    def apply_transformer(self, key, transformer):
-        if not transformer:
-            return self.raw_data[key]
-        if isinstance(transformer, str):
-            return self.raw_data[transformer]
-        return transformer.transform(self.raw_data)
-
-    def post_transform(self):
-        pass
+        self.transformed = self.transformer.transform(self.raw_data)
+        return self.transformed
 
     def load(self):
-        return self.loader.load(self.transformed)
+        self.loaded = self.loader.load(self.transformed)
+        return self.loaded
 
 
 class MultipleExtractETL(ETL):
 
     @classmethod
-    def execute(cls, identifiers):
-        for data in cls.extractor.extract(identifiers):
-            yield cls(data).execute_transform_load()
+    def check_for_existing_value(cls):
+        return None
 
     @classmethod
-    def execute_one(cls, identifiers):
-        extracted = cls.extractor.extract(identifiers)
+    def execute(cls, identifier):
+        for data in cls.extractor.extract(identifier):
+            yield cls.check_for_existing_value(data) or cls(data).execute_transform_load()
+
+    @classmethod
+    def execute_one(cls, identifier):
+        extracted, = cls.extractor.extract(identifier)
         return cls(extracted).execute_transform_load()
 
     def __init__(self, raw_data):
         self.raw_data = raw_data
-        self.transformed = {}
-
-    def execute_transform_load(self):
-        self.transform()
-        self.post_transform()
-        return self.load()
+        self.transformed = None
+        self.loaded = None
 
 
-class ModelLoader(Loader):
+class NoOpExtractor(object):
 
-    def __init__(self, model_class, upsert_key='id', model_column_name=None):
+    @classmethod
+    def extract(self, obj):
+        return obj
+
+
+class ModelLoader(object):
+
+    def __init__(self, model_class, upsert_key='id'):
         self.model_class = model_class
-        self.transformed_upsert_key = upsert_key
-        self.model_column_upsert_key = model_column_name or self.transformed_upsert_key
+        self.upsert_key = upsert_key
 
     def load(self, transformed):
-        return self.model_class.upsert_by(self.transformed_upsert_key)(**transformed)
+        return self.model_class.upsert_by(self.upsert_key)(**transformed)
 
 
-class FieldTransform(Transformer):
+class SubTransformTransformer(object):
 
-    def __init__(self, field_name):
-        self.field_name = field_name
+    def __init__(self, transformers):
+        self.transformers = transformers
 
-    def transform(self, item_resource):
-        return self._transform(item_resource.fields)
+    def transform(self, raw_data):
+        transformed = {}
+        for transformer in self.transformers:
+            transformer.transform(raw_data, transformed)
+        return transformed
 
-    def _transform(self, fields):
-        return fields[self.field_name]
+
+class SingleKeySubTransform(object):
+
+    def __init__(self, output_key='', **kwargs):
+        self.output_key = output_key
+
+    def transform(self, raw_data, transformed):
+        transformed[self.output_key] = self.get_value(raw_data, transformed)
+        return transformed
+
+
+class ItemGetterTransform(SingleKeySubTransform):
+
+    def __init__(self, input_key='', **kwargs):
+        self.input_key = input_key
+        kwargs.setdefault('output_key', input_key)
+        super(ItemGetterTransform, self).__init__(**kwargs)
+
+    def get_value(self, raw_data, _):
+        return raw_data[self.input_key]
+
+
+class SimpleFieldTransform(ItemGetterTransform):
+
+    def get_value(self, item_resource, _):
+        return item_resource.fields[self.input_key]
+
+
+class FieldTransform(SingleKeySubTransform):
+
+    def transform(self, item_resource, transformed):
+        transformed[self.output_key] = self.get_value(
+            item_resource.fields,
+            transformed
+        )
+
+

@@ -1,6 +1,6 @@
 from .. import models
 from .. import trac_client
-from .. import trac_etl
+from .. import ticket_etl
 
 
 def refresh(usernames):
@@ -20,7 +20,7 @@ def refresh(usernames):
 
 def fetch_tickets(username):
     for trac_id in trac_client.client.get_unclosed_ticket_ids_for_user(username):
-        yield trac_etl.TicketETL(trac_id).execute()
+        yield ticket_etl.TicketETL(trac_id).execute()
 
 
 def update_existing_active_tickets(usernames, ticket_ids_to_skip=set()):
@@ -32,4 +32,4 @@ def update_existing_active_tickets(usernames, ticket_ids_to_skip=set()):
         ).filter(
             models.db.not_(models.Ticket.id.in_(ticket_ids_to_skip))
         ):
-            yield trac_etl.TicketETL(ticket.id).execute()
+            yield ticket_etl.TicketETL(ticket.id).execute()
