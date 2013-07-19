@@ -166,3 +166,7 @@ thead th.ticket {
 }
 
 /* End: Media Queries */
+
+.needs-review, .needs-revision {
+    background-color: red;
+}

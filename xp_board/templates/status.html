@@ -49,12 +49,12 @@
             </tr>
           </thead>
           <tbody>
-            {% for review_request in user.pending_primary_reviews %}
-            <tr>
+            {% for review_request in user.pending_primary_reviews.all() %}
+            <tr {% if review_request.needs_review%}class="needs-review"{% endif %}>
               <td>
                 <a href={{ review_url_generator(review_request.id) }}>{{ review_request.id }}</a>
               </td>
-              <td>{{ review_request.submitter.username }}</td>
+              <td>{{ review_request.submitter.username }} </td>
               <td>{{ review_request.primary_reviewer.username }}</td>
               <td>{{ review_request.summary }}</td>
               <td>{{ review_request.ship_it_status }}</td>
@@ -75,7 +75,7 @@
           </thead>
           <tbody>
             {% for ticket in tickets %}
-            <tr>
+            <tr {% if ticket.needs_revision %}class="needs-revision"{% endif %}>
               <td>
                 <a href="https://trac.yelpcorp.com/ticket/{{ ticket.id }}">{{ ticket.id }}</a>
               </td>
@@ -99,8 +99,8 @@
     </div>
     <script type="text/javascript">
       $(document).ready(function () {
-        $('.dropdown-toggle').dropdown();
-        $('table.sortable').tablesorter();
+      $('.dropdown-toggle').dropdown();
+      $('table.sortable').tablesorter();
       });
     </script>
   </body>

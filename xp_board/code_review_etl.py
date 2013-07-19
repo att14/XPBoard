@@ -28,6 +28,15 @@ class ReviewerTransform(etl.SingleKeySubTransform):
             return None
 
 
+class HasOpenIssuesTransform(etl.SingleKeySubTransform):
+
+    def get_value(self, rb_review, transformed):
+        return any(
+            comment.fields['issue_opened'] and comment.fields['issue_status'] == 'open'
+            for comment in rb_review.get_diff_comments()
+        )
+
+
 class CodeReviewETL(etl.ETL):
 
     extractor = etl.NoOpExtractor
@@ -35,6 +44,7 @@ class CodeReviewETL(etl.ETL):
         etl.SimpleFieldTransform(input_key='id'),
         TimeFieldTransform(input_key='timestamp', output_key='time_submitted'),
         ReviewerTransform(output_key='reviewer'),
-        etl.SimpleFieldTransform(input_key='ship_it')
+        etl.SimpleFieldTransform(input_key='ship_it'),
+        HasOpenIssuesTransform(output_key='has_open_issues')
     ])
     loader = etl.ModelLoader(models.CodeReview)

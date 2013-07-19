@@ -98,10 +98,7 @@ class User(db.Model):
 
     @property
     def pending_primary_reviews(self):
-        return filter(
-            lambda review_request: review_request.ship_it_status == 'pending',
-            self.primary_reviews
-        )
+        return self.primary_reviews.filter(ReviewRequest.status == 'pending')
 
     @property
     def full_name(self):
@@ -159,16 +156,46 @@ class ReviewRequest(db.Model):
     time_last_updated = db.Column(db.DateTime)
 
     @property
+    def needs_review(self):
+        return self.most_recent_review is None or (self.most_recent_review.time_submitted < self.time_last_updated and not self.has_open_issues and not self.has_ship_it)
+
+    @property
+    def needs_revision(self):
+        return self.has_open_issues or (self.most_recent_review.time_submitted == self.time_last_updated and not self.has_ship_it)
+
+    @property
+    def has_open_issues(self):
+        return self.code_reviews.filter(
+            CodeReview.has_open_issues == True
+        ).count() > 0
+
+    @property
+    def primary_reviews(self):
+        return self.code_reviews.filter(
+            CodeReview.reviewer_id == self.primary_reviewer_id
+        )
+
+    @property
+    def most_recent_review(self):
+        try:
+            return self.code_reviews.order_by(CodeReview.time_submitted.desc()).limit(1).one()
+        except:
+            return None
+
+    @property
+    def most_recent_primary_review(self):
+        try:
+            self.primary_reviews.order_by(CodeReview.time_submitted.desc()).limit(1).one()
+        except:
+            return None
+
+    @property
     def has_ship_it(self):
         return any(code_review.ship_it for code_review in self.code_reviews.all())
 
     @property
     def has_ship_it_from_primary(self):
-        return self.code_reviews.filter(
-            CodeReview.reviewer_id == self.primary_reviewer_id
-        ).filter(
-            CodeReview.ship_it == True
-        ).count() > 0
+        return self.primary_reviews.filter(CodeReview.ship_it == True).count() > 0
 
     @property
     def ship_it_status(self):
@@ -190,7 +217,7 @@ class ReviewRequest(db.Model):
     primary_reviewer = db.relationship(
         User,
         primaryjoin='ReviewRequest.primary_reviewer_id == User.id',
-        backref=orm.backref('primary_reviews', uselist=True),
+        backref=orm.backref('primary_reviews', uselist=True, lazy='dynamic'),
         uselist=False,
     )
 
@@ -208,6 +235,7 @@ class CodeReview(db.Model):
     reviewer_id = db.Column(db.Integer, db.ForeignKey(User.id))
     review_request_id = db.Column(db.Integer, db.ForeignKey(ReviewRequest.id))
     ship_it = db.Column(db.Boolean)
+    has_open_issues = db.Column(db.Boolean)
 
     time_submitted = db.Column(db.DateTime)
 
@@ -235,6 +263,13 @@ class Ticket(db.Model):
     summary = db.Column(db.String(length=256))
     component = db.Column(db.String(length=64))
     priority = db.Column(db.Integer)
+
+    @property
+    def needs_revision(self):
+        return any([
+            review_request.needs_revision
+            for review_request in self.review_requests
+        ])
 
     @property
     def completion_status(self):

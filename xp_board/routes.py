@@ -9,11 +9,11 @@ from . import config
 def review_board_dashboard():
     users = sorted(
         models.User.list_by_column_values(config.users, 'username'),
-        key=lambda user: -len(user.primary_reviews)
+        key=lambda user: -len(user.primary_reviews.all())
     )
     return render_template(
-        'reviewboard_dashboard.html',
-        users=sorted(users, key=lambda x: len(x.primary_reviews), reverse=True),
+        'reviews.html',
+        users=users,
         review_url_generator=lambda review_id: 'http://%s/r/%s' % (
             config.rb_url,
             review_id
