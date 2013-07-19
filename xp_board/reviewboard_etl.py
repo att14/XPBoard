@@ -10,7 +10,7 @@ from . import user_etl
 
 class ReviewRequestExtractor(etl.Extractor):
 
-    def __init__(self, number_of_days_to_look_back=100, max_results=200):
+    def __init__(self, number_of_days_to_look_back=14, max_results=200):
         self.number_of_days_to_look_back = number_of_days_to_look_back
         self.max_results = max_results
 
@@ -23,6 +23,12 @@ class ReviewRequestExtractor(etl.Extractor):
             ),
             status='pending'
         )
+
+
+class ReviewRequestByIDExtractor(etl.Extractor):
+
+    def extract(self, review_request_id):
+        return reviewboard_client.client.get_review_request(review_request_id)
 
 
 class SubmitterTransform(etl.Transformer):
@@ -96,3 +102,14 @@ class ReviewRequestETL(etl.MultipleExtractETL):
                 suggestions=self.transformed['reviewers']
             )
         del self.transformed['primary_reviewer_string']
+
+
+class ReviewRequestETLByID(etl.ETL):
+
+	extractor = ReviewRequestByIDExtractor()
+
+	transformers = ReviewRequestETL.transformers
+
+	loader = ReviewRequestETL.loader
+
+	post_transform = ReviewRequestETL.post_transform.im_func

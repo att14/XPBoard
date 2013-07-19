@@ -35,11 +35,11 @@ nosetests.xml
 .project
 .pydevproject
 
+# Project Specifics
 xp_board/config.py
 .ropeproject/
 xp_board/database.db
 
 ENV
 refresh_review_requests.log
-
 refresh_data.log

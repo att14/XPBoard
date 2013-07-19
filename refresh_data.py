@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 from xp_board import logic
 from xp_board import config
-from xp_board.util import log
+from xp_board import util
 
 
 class Refresh(object):
@@ -13,17 +13,17 @@ class Refresh(object):
         self.refresh_trac()
         self.refresh_rb()
 
-    @log
+    @util.log(util.log_ticket)
     def refresh_trac(self):
-        refreshed = logic.trac.update_existing_active_tickets(self.users)
-        for user in self.users:
-            refreshed.extend(logic.trac.fetch_tickets(user))
-        return refreshed
+        return logic.trac.refresh(self.users)
 
-
-    @log
+    @util.log(util.log_review_request)
     def refresh_rb(self):
-        return logic.rb.refresh(self.users)
+        refreshed = set()
+        for review_request in logic.rb.refresh(self.users):
+            refreshed.add(review_request.id)
+            yield review_request
+        logic.rb.refresh_existing_pending(ids_not_to_refresh=refreshed)
 
 
 if __name__ == '__main__':
