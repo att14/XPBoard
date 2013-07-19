@@ -1,10 +1,8 @@
-from __future__ import absolute_import
+#!/usr/bin/env python
 import os
 
 from flask import Flask, url_for
 
-
-application_directory = os.path.abspath(os.path.dirname(__file__))
 
 app = Flask(__name__)
 app.jinja_env.globals['get_static_url'] = lambda filename: url_for(
@@ -14,7 +12,6 @@ app.jinja_env.globals['get_static_url'] = lambda filename: url_for(
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get(
     'DATABASE_URL',
     'sqlite:///{app_dir}/database.db'.format(
-        app_dir=application_directory
+        app_dir=os.path.abspath(os.path.dirname(__file__))
     )
 )
-

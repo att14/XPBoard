@@ -1,30 +1,30 @@
 #!/usr/bin/env python
-import datetime
-import logging
-import os
-
 from xp_board import logic
 from xp_board import config
+from xp_board.util import log
 
 
-logging.basicConfig(
-    filename=os.path.join(os.path.dirname(os.path.realpath(__file__)), "refresh_data.log"),
-    level=logging.DEBUG
-)
+class Refresh(object):
+
+    def __init__(self, users):
+        self.users = users
+
+    def run(self):
+        self.refresh_trac()
+        self.refresh_rb()
+
+    @log
+    def refresh_trac(self):
+        refreshed = logic.trac.update_existing_active_tickets(self.users)
+        for user in self.users:
+            refreshed.extend(logic.trac.fetch_tickets(user))
+        return refreshed
+
+
+    @log
+    def refresh_rb(self):
+        return logic.rb.refresh(self.users)
 
 
 if __name__ == '__main__':
-    logging.info(logic.trac.update_existing_active_tickets_for_users(config.users))
-    for user in config.users:
-        logging.info(
-            "Refreshed {0} trac tickets at {1}.".format(
-                len(logic.trac.fetch_tickets_by_username(user)),
-                datetime.datetime.now()
-            )
-        )
-    logging.info(
-        "Refreshed {0} review requests at {1}.".format(
-            len(logic.review_request.refresh_for_users(config.users)),
-            str(datetime.datetime.now())
-        )
-    )
+    Refresh(config.users).run()

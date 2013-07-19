@@ -3,6 +3,7 @@ from flask import render_template
 from . import app
 from . import models
 from . import config
+import ipdb; ipdb.set_trace()
 
 
 @app.route('/reviews')
@@ -31,12 +32,14 @@ def tickets():
         users=models.User.list_by_column_values(config.users, 'username')
     )
 
+
 @app.route('/board')
 def board():
     return render_template(
         'board.html',
         users=models.User.list_by_column_values(config.users, 'username')
     )
+
 
 @app.route('/status')
 def status():

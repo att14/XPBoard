@@ -47,7 +47,3 @@ class Ticket(object):
     @property
     def summary(self):
         return self.attributes['summary']
-
-
-if __name__ == '__main__':
-    print User('atribone').get_tickets()

@@ -1,6 +1,6 @@
 from rbtools.api.client import RBClient
 
-from . import config
+from xp_board import config
 
 
 class UserNotFoundError(Exception): pass
@@ -13,8 +13,8 @@ class ReviewboardClient(object):
         self._rb_client = rb_client
 
     @classmethod
-    def create_using_reviewboard_url(cls, reviewboard_url, **rb_client_kwargs):
-        rb_client = RBClient('https://%s' % reviewboard_url, **rb_client_kwargs)
+    def create(cls, rb_url, **rb_client_kwargs):
+        rb_client = RBClient('https://%s' % rb_url, **rb_client_kwargs)
         return cls(rb_client)
 
     def get_review_requests(self, **filters):
@@ -37,8 +37,6 @@ class ReviewboardClient(object):
             raise UserNotFoundError()
 
 
-client = ReviewboardClient.create_using_reviewboard_url(
-    config.reviewboard_url,
-    username=config.username,
-    password=config.password
-)
+client = ReviewboardClient.create(config.rb_url,
+                                  username=config.username,
+                                  password=config.password)
