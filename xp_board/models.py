@@ -19,11 +19,39 @@ def find_by_id(cls, model_id):
     return model_list[0] if model_list else None
 
 
+def update(self, **kwargs):
+    for key, value in kwargs.iteritems():
+        setattr(self, key, value)
+    return self
+
+def create(cls, **kwargs):
+    model = cls().update(**kwargs)
+    db.session.add(model)
+    db.session.commit()
+    return model
+
+
+def upsert_by(cls, upsert_key):
+    def upsert(**kwargs):
+        try:
+            model, = cls.list_by_column_values(
+                [kwargs[upsert_key]],
+                column_name=upsert_key
+            )
+            return model.update(**kwargs)
+        except ValueError:
+            return cls.create(**kwargs)
+    return upsert
+
 
 db = SQLAlchemy(app)
 db.Model.list_by_column_values = classmethod(list_by_column_values)
 db.Model.list_by_ids = classmethod(list_by_ids)
 db.Model.find_by_id = classmethod(find_by_id)
+db.Model.create = classmethod(create)
+db.Model.upsert_by = classmethod(upsert_by)
+db.Model.update = update
+
 
 
 class User(db.Model):
@@ -44,8 +72,8 @@ class User(db.Model):
 
         if suggestions:
             return min(
-            	suggestions,
-            	key=lambda user: user.levenshtein_on_names(user_string)
+                suggestions,
+                key=lambda user: user.levenshtein_on_names(user_string)
             )
         return None
 
@@ -130,22 +158,22 @@ class ReviewRequest(db.Model):
 
     @property
     def has_ship_it(self):
-	return any(code_review.ship_it for code_review in self.code_reviews.all())
+        return any(code_review.ship_it for code_review in self.code_reviews.all())
 
     @property
     def has_ship_it_from_primary(self):
-	return self.code_reviews.filter(
-	    CodeReview.reviewer_id == self.primary_reviewer_id
-	).filter(
-	    CodeReview.ship_it == True
-	).count() > 0
+        return self.code_reviews.filter(
+            CodeReview.reviewer_id == self.primary_reviewer_id
+        ).filter(
+            CodeReview.ship_it == True
+        ).count() > 0
 
     @property
     def ship_it_status(self):
         if self.status == 'submitted':
             return self.status
 
-	if self.has_ship_it_from_primary:
+        if self.has_ship_it_from_primary:
             return 'ship_it'
 
         return self.status
@@ -179,14 +207,16 @@ class CodeReview(db.Model):
     review_request_id = db.Column(db.Integer, db.ForeignKey(ReviewRequest.id))
     ship_it = db.Column(db.Boolean)
 
+    time_submitted = db.Column(db.DateTime)
+
     review_request = db.relationship(
         ReviewRequest,
-	backref=orm.backref('code_reviews', uselist=True, lazy='dynamic'),
+        backref=orm.backref('code_reviews', uselist=True, lazy='dynamic'),
         uselist=False
     )
     reviewer = db.relationship(
         User,
-	backref=orm.backref('code_reviews', uselist=True, lazy='dynamic'),
+        backref=orm.backref('code_reviews', uselist=True, lazy='dynamic'),
         uselist=False
     )
 

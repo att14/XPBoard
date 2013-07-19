@@ -10,7 +10,7 @@ from . import user_etl
 
 class ReviewRequestExtractor(etl.Extractor):
 
-    def __init__(self, number_of_days_to_look_back=14, max_results=200):
+    def __init__(self, number_of_days_to_look_back=100, max_results=200):
         self.number_of_days_to_look_back = number_of_days_to_look_back
         self.max_results = max_results
 
@@ -61,7 +61,12 @@ class ReviewsTransform(etl.Transformer):
 
     def transform(self, rb_review_request):
         return [
-            models.CodeReview(
+            models.CodeReview.upsert_by('id')(
+                id=rb_review.fields['id'],
+                time_submitted=datetime.datetime.strptime(
+                    rb_review.fields['timestamp'],
+                    "%Y-%m-%d %H:%M:%S"
+                ),
                 reviewer=models.User.find_user_by_username(
                     rb_review.get_user().fields['username'],
                     create_if_missing=True
