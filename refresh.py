@@ -23,7 +23,11 @@ class Refresh(object):
         for review_request in logic.rb.refresh(self.users):
             refreshed.add(review_request.id)
             yield review_request
-        logic.rb.refresh_existing_pending(ids_not_to_refresh=refreshed)
+
+        for review_request in logic.rb.refresh_existing_pending(
+            ids_not_to_refresh=refreshed
+        ):
+            yield review_request
 
 
 if __name__ == '__main__':
