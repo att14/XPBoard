@@ -48,7 +48,7 @@
 	</thead>
 	<tbody>
           {% for review_request in user.primary_reviews %}
-          <tr>
+          <tr {% if review_request.needs_review%}class="needs-review"{% endif %}>
             <td>
               <a href={{ review_url_generator(review_request.id) }}>{{ review_request.id }}</a>
             </td>
