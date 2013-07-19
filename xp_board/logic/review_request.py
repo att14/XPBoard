@@ -1,17 +1,18 @@
-import itertools
-
 from .. import models
 from .. import reviewboard_etl
 
 
-def refresh_for_users(users):
-    review_requests = list(itertools.chain(
-        *[reviewboard_etl.ReviewRequestETL.execute(user) for user in users]
-    ))
-    models.db.session.add_all(review_requests)
-    models.db.session.commit()
-    return review_requests
+def refresh_for_users(usernames):
+    for username in usernames:
+        for review_request in reviewboard_etl.ReviewRequestETL.execute(username):
+            yield review_request
 
 
-def get_review_requests_by_reviewer():
-    return models.ReviewRequest.query.all()
+def refresh_existing_pending_review_requests(ids_not_to_refresh=tuple()):
+    requests_to_refresh = models.ReviewRequest.query.filter(
+        models.ReviewRequest.status == 'pending'
+    ).filter(
+        models.db.not_(models.ReviewRequest.id.in_(ids_not_to_refresh))
+    ).all()
+    for review_request in requests_to_refresh:
+        yield reviewboard_etl.ReviewRequestETLByID(review_request.id).execute()

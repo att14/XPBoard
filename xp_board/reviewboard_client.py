@@ -11,11 +11,15 @@ class ReviewboardClient(object):
 
     def __init__(self, rb_client):
         self._rb_client = rb_client
-
+        
     @classmethod
     def create_using_reviewboard_url(cls, reviewboard_url, **rb_client_kwargs):
         rb_client = RBClient('https://%s' % reviewboard_url, **rb_client_kwargs)
         return cls(rb_client)
+
+    def get_review_request(self, review_request_id):
+        root = self._rb_client.get_root()
+        return root.get_review_request(review_request_id=review_request_id)
 
     def get_review_requests(self, **filters):
         root = self._rb_client.get_root()

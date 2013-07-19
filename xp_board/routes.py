@@ -14,7 +14,7 @@ def review_board_dashboard():
     return render_template(
         'reviewboard_dashboard.html',
         users=sorted(users, key=lambda x: len(x.primary_reviews), reverse=True),
-        review_url_generator=lambda review_id: '%s/r/%s' % (
+        review_url_generator=lambda review_id: 'http://%s/r/%s' % (
             config.reviewboard_url,
             review_id
         ),
@@ -42,7 +42,7 @@ def board():
 def status():
     return render_template(
         'status.html',
-        review_url_generator=lambda review_id: '%s/r/%s' % (
+        review_url_generator=lambda review_id: 'http://%s/r/%s' % (
             config.reviewboard_url,
             review_id
         ),
