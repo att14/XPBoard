@@ -1,3 +1,5 @@
+import datetime
+
 from flask.ext.sqlalchemy import SQLAlchemy
 from sqlalchemy.orm.exc import NoResultFound
 from sqlalchemy import orm
@@ -112,6 +114,16 @@ class User(db.Model):
             status_to_tickets.setdefault(ticket.completion_status, []).append(ticket)
 
         return status_to_tickets
+
+	@property
+	def closed_tickets(self):
+		return self.owned_tickets.filter(Ticket.status == 'closed')
+
+	def tickets_closed_since(self, past_time):
+		return self.closed_tickets.filter(Ticket.time_changed > past_time)
+
+	def tickets_close_in_last(self, time_delta):
+		return self.tickets_closed_since(datetime.datetime.now() - time_delta)
 
     def levenshtein_on_names(self, string):
         if not string:
