@@ -269,6 +269,7 @@ class Ticket(db.Model):
     summary = db.Column(db.String(length=256))
     component = db.Column(db.String(length=64))
     priority = db.Column(db.Integer)
+    time_changed = db.Column(db.DateTime)
 
     @property
     def needs_revision(self):
