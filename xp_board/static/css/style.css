@@ -54,6 +54,14 @@
 
 /* Start: General styles */
 
+.table-hover tr.needs-review > td, .table-hover tr.needs-revision > td {
+	background-color: #FFE2E2;
+}
+
+.table-hover tr.needs-review:hover > td, .table-hover tr.needs-revision:hover > td {
+	background-color: #FFD1D1;
+}
+
 div.main-nav .navbar-inner {
 	background: rgb(125,126,125); /* Old browsers */
 	background: -moz-linear-gradient(top, rgba(125,126,125,1) 0%, rgba(14,14,14,1) 100%); /* FF3.6+ */
@@ -162,11 +170,8 @@ thead th.ticket {
 		margin-top: 70px;
 	}
 
-	/* Start: General styles */
+	/* End: General styles */
 }
 
 /* End: Media Queries */
 
-.needs-review, .needs-revision {
-    background-color: red;
-}
