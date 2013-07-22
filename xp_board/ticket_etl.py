@@ -28,7 +28,7 @@ class PriorityTransformer(etl.SingleKeySubTransform):
 
 TRAC_TIME_FORMAT = "%Y%m%dT%H:%M:%S"
 
-class TicketTimeFieldTransform(etl.ItemGetterTransform):
+class TicketTimeTransform(etl.ItemGetterTransform):
 
     def get_value(self, ticket, transformed):
         return datetime.datetime.strptime(
@@ -46,7 +46,7 @@ TicketTransformer = etl.SubTransformTransformer([
     PriorityTransformer(output_key='priority'),
     UserTransformer(input_key='reporter'),
     UserTransformer(input_key='owner'),
-    TicketTimeFieldTransform(input_key='time_changed'),
+    TicketTimeTransform(input_key='time_changed'),
 ])
 
 
