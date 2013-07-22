@@ -80,14 +80,7 @@ class User(db.Model):
         return None
 
     @classmethod
-    def maybe_find_user_by_username(cls, *args, **kwargs):
-        try:
-            return cls.find_user_by_username(*args, **kwargs)
-        except NoResultFound:
-            return None
-
-    @classmethod
-    def find_user_by_username(cls, username, create_if_missing=False):
+    def find_user_by_username(cls, username, create_if_missing=False, raise_if_not_found=True):
         try:
             return cls.query.filter(cls.username == username).one()
         except NoResultFound:
@@ -96,7 +89,8 @@ class User(db.Model):
                 db.session.add(user)
                 db.session.commit()
                 return user
-            raise
+            if raise_if_not_found:
+                raise
 
     @property
     def pending_primary_reviews(self):
@@ -115,15 +109,15 @@ class User(db.Model):
 
         return status_to_tickets
 
-	@property
-	def closed_tickets(self):
-		return self.owned_tickets.filter(Ticket.status == 'closed')
+    @property
+    def closed_tickets(self):
+        return self.owned_tickets.filter(Ticket.status == 'closed')
 
-	def tickets_closed_since(self, past_time):
-		return self.closed_tickets.filter(Ticket.time_changed > past_time)
+    def tickets_closed_since(self, past_time):
+        return self.closed_tickets.filter(Ticket.time_changed > past_time)
 
-	def tickets_close_in_last(self, time_delta):
-		return self.tickets_closed_since(datetime.datetime.now() - time_delta)
+    def tickets_close_in_last(self, time_delta):
+        return self.tickets_closed_since(datetime.datetime.now() - time_delta)
 
     def levenshtein_on_names(self, string):
         if not string:
