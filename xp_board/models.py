@@ -53,7 +53,6 @@ db.Model.upsert_by = classmethod(upsert_by)
 db.Model.update = update
 
 
-
 class User(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
@@ -62,6 +61,10 @@ class User(db.Model):
     last_name = db.Column(db.String(length=20))
 
     username = db.Column(db.String(length=20), unique=True)
+
+    @property
+    def as_dict(self):
+        return {'first': self.first_name, 'last': self.last_name}
 
     @classmethod
     def find_user_by_username(cls, username, create_if_missing=False, raise_if_not_found=True):
@@ -174,6 +177,13 @@ class ReviewRequest(db.Model):
     time_last_updated = db.Column(db.DateTime)
 
     @property
+    def as_dict(self):
+        return {
+            'id': self.id,
+            'ship_it': self.has_ship_it
+        }
+
+    @property
     def needs_review(self):
         return self.most_recent_review is None or (self.most_recent_review.time_submitted < self.time_last_updated and not self.has_open_issues and not self.has_ship_it)
 
@@ -282,6 +292,17 @@ class Ticket(db.Model):
     component = db.Column(db.String(length=64))
     priority = db.Column(db.Integer)
     time_changed = db.Column(db.DateTime)
+
+    @property
+    def as_dict(self):
+        return {
+            'id': self.id,
+            'status': self.status,
+            'summary': self.summary,
+            'priority': self.priority,
+            'resolution': self.resolution,
+            'review_requests': [rr.as_dict for rr in self.review_requests]
+        }
 
     @property
     def needs_revision(self):

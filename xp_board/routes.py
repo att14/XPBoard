@@ -1,8 +1,10 @@
+from flask import jsonify
 from flask import render_template
+from flask import request
 
 from . import app
-from . import models
 from . import config
+from . import models
 
 
 @app.route('/reviews')
@@ -51,3 +53,15 @@ def status():
         users=models.User.list_by_column_values(config.users, 'username'),
         team_name=config.team_name,
     )
+
+
+@app.route('/user-data')
+def user_data():
+    usernames = request.args.getlist('user')
+    users = models.User.list_by_column_values(usernames, column_name='username')
+
+    data = dict((user.username, user.as_dict) for user in users)
+    for user in users:
+        data[user.username].update({'tickets': [ticket.as_dict for ticket in user.pending_tickets]})
+
+    return jsonify(data)
