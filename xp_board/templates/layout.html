@@ -1,0 +1,17 @@
+<!doctype html>
+<html ng-app="XPBoard">
+  <head>
+    {% block head %}
+    <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.1.5/angular.min.js"></script>
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.4.4/underscore-min.js"></script>
+    <script src=<% get_static_url("js/app.js") %>></script>
+    <script src=<% get_static_url("js/directives.js") %>></script>
+    <script src=<% get_static_url("js/controllers.js") %>></script>
+    <link href=<% get_static_url("css/board_style.css") %> rel="stylesheet"></link>
+    {% endblock %}
+  </head>
+  <body>
+    {% block content %}
+    {% endblock %}
+  </body>
+</html>

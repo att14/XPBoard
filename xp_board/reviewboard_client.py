@@ -11,7 +11,7 @@ class ReviewboardClient(object):
 
     def __init__(self, rb_client):
         self._rb_client = rb_client
-        
+
     @classmethod
     def create(cls, rb_url, **rb_client_kwargs):
         rb_client = RBClient('https://%s' % rb_url, **rb_client_kwargs)

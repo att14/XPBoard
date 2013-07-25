@@ -5,6 +5,8 @@ from flask import Flask, url_for
 
 
 app = Flask(__name__)
+app.jinja_env.variable_start_string = '<%'
+app.jinja_env.variable_end_string = '%>'
 app.jinja_env.globals['get_static_url'] = lambda filename: url_for(
     'static',
     filename=filename

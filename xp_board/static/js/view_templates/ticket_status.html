@@ -1,32 +1,6 @@
-<html>
-  <head>
-    <link href="static/css/board_style.css" rel="stylesheet"></link>
-  </head>
-  <body>
-    <div class="status-column">
-      <div class="sticky"></div>
-      <div class="sticky"></div>
-    </div>
-    <div class="status-column">
-      <div class="sticky"></div>
-      <div class="sticky"></div>
-    </div>
-    <div class="status-column">
-      <div class="sticky"></div>
-      <div class="sticky"></div>
-      <div class="sticky"></div>
-      <div class="sticky"></div>
-      <div class="sticky"></div>
-    </div>
-    <div class="status-column">
-      <div class="sticky"></div>
-    </div>
-    <div class="status-column">
-      <div class="sticky"></div>
-      <div class="sticky"></div>
-      <div class="sticky"></div>
-      <div class="sticky"></div>
-      <div class="sticky"></div>
-    </div>
-  </body>
-</html>
+<div id="content">
+  <sticky-column items="ticketsByStatus[status]"
+                 title="status"
+                 ng-repeat="status in statuses">
+  </sticky-column>
+</div>
