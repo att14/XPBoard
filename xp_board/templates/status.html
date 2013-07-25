@@ -37,6 +37,7 @@
             </ul>
           </div>
         </div>
+        {% if user.pending_primary_reviews.all() %}
         <h4>code reviews</h4>
         <table class="table table-hover sortable">
           <thead>
@@ -62,7 +63,8 @@
             {% endfor %}
           </tbody>
         </table>
-        {% for resolution, tickets in user.pending_tickets_by_status.iteritems() %}
+        {% endif %}
+        {% for resolution, tickets in user.pending_and_recently_completed_tickets_by_status.iteritems() %}
         <h4>{{ resolution }}</h4>
         <table class="table table-hover sortable">
           <thead>
@@ -83,9 +85,9 @@
               <td>{{ ticket.summary }}</td>
               <td>
                 {% for review_request in ticket.review_requests %}
-		<a href="https://reviewboard.yelpcorp.com/r/{{ review_request.id }}">
-		  {{ review_request.primary_reviewer.username }} ( {{ review_request.id }} )
-		</a>
+                <a href="https://reviewboard.yelpcorp.com/r/{{ review_request.id }}">
+                  {{ review_request.primary_reviewer.username }} ( {{ review_request.id }} )
+                </a>
                 {% endfor %}
               </td>
             </tr>

@@ -32,7 +32,10 @@ class UserETL(etl.ETL):
         return self.check_for_existing_value() or self.execute()
 
     def check_for_existing_value(self):
-        return models.User.maybe_find_user_by_username(self.identifier)
+        return models.User.find_user_by_username(
+            self.identifier,
+            raise_if_not_found=False
+        )
 
     def execute(self):
         try:

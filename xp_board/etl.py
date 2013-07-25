@@ -78,7 +78,7 @@ class ModelLoader(object):
         self.upsert_key = upsert_key
 
     def load(self, transformed):
-        return self.model_class.upsert_by(self.upsert_key)(**transformed)
+        return self.model_class.upsert_by(self.upsert_key, **transformed)
 
 
 class SubTransformTransformer(object):

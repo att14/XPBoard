@@ -1,3 +1,5 @@
+import datetime
+
 from flask.ext.sqlalchemy import SQLAlchemy
 from sqlalchemy.orm.exc import NoResultFound
 from sqlalchemy import orm
@@ -31,17 +33,15 @@ def create(cls, **kwargs):
     return model
 
 
-def upsert_by(cls, upsert_key):
-    def upsert(**kwargs):
-        try:
-            model, = cls.list_by_column_values(
-                [kwargs[upsert_key]],
-                column_name=upsert_key
-            )
-            return model.update(**kwargs)
-        except ValueError:
-            return cls.create(**kwargs)
-    return upsert
+def upsert_by(cls, upsert_key, **kwargs):
+    try:
+        model, = cls.list_by_column_values(
+            [kwargs[upsert_key]],
+            column_name=upsert_key
+        )
+        return model.update(**kwargs)
+    except ValueError:
+        return cls.create(**kwargs)
 
 
 db = SQLAlchemy(app)
@@ -64,6 +64,19 @@ class User(db.Model):
     username = db.Column(db.String(length=20), unique=True)
 
     @classmethod
+    def find_user_by_username(cls, username, create_if_missing=False, raise_if_not_found=True):
+        try:
+            return cls.query.filter(cls.username == username).one()
+        except NoResultFound:
+            if create_if_missing:
+                user = cls(username=username)
+                db.session.add(user)
+                db.session.commit()
+                return user
+            if raise_if_not_found:
+                raise
+
+    @classmethod
     def search_for_user(cls, user_string, suggestions=None):
         try:
             return cls.find_user_by_username(user_string)
@@ -77,42 +90,6 @@ class User(db.Model):
             )
         return None
 
-    @classmethod
-    def maybe_find_user_by_username(cls, *args, **kwargs):
-        try:
-            return cls.find_user_by_username(*args, **kwargs)
-        except NoResultFound:
-            return None
-
-    @classmethod
-    def find_user_by_username(cls, username, create_if_missing=False):
-        try:
-            return cls.query.filter(cls.username == username).one()
-        except NoResultFound:
-            if create_if_missing:
-                user = cls(username=username)
-                db.session.add(user)
-                db.session.commit()
-                return user
-            raise
-
-    @property
-    def pending_primary_reviews(self):
-        return self.primary_reviews.filter(ReviewRequest.status == 'pending')
-
-    @property
-    def full_name(self):
-        return '%s %s' % (self.first_name, self.last_name)
-
-    @property
-    def pending_tickets_by_status(self):
-        pending_tickets = self.owned_tickets.filter(Ticket.status != 'closed').all()
-        status_to_tickets = {}
-        for ticket in pending_tickets:
-            status_to_tickets.setdefault(ticket.completion_status, []).append(ticket)
-
-        return status_to_tickets
-
     def levenshtein_on_names(self, string):
         if not string:
             return 1000
@@ -125,6 +102,47 @@ class User(db.Model):
             key=lambda name: lib.levenshtein(name.lower(), string.lower())
         )
         return lib.levenshtein(best_match, string)
+
+    # Review functions
+
+    @property
+    def pending_primary_reviews(self):
+        return self.primary_reviews.filter(ReviewRequest.status == 'pending')
+
+    @property
+    def full_name(self):
+        return '%s %s' % (self.first_name, self.last_name)
+
+    # Ticket functions
+
+    @property
+    def pending_tickets(self):
+        return self.owned_tickets.filter(Ticket.status != 'closed')
+
+    @property
+    def closed_tickets(self):
+        return self.owned_tickets.filter(Ticket.status == 'closed')
+
+    def tickets_closed_since(self, past_time):
+        return self.closed_tickets.filter(Ticket.time_changed > past_time)
+
+    def tickets_closed_in_last(self, time_delta):
+        return self.tickets_closed_since(datetime.datetime.now() - time_delta)
+
+    @property
+    def tickets_closed_in_last_week(self):
+        return self.tickets_closed_in_last(datetime.timedelta(days=7))
+
+    @property
+    def pending_and_recently_closed_tickets(self):
+        return self.pending_tickets.union(self.tickets_closed_in_last_week)
+
+    @property
+    def pending_and_recently_completed_tickets_by_status(self):
+        status_to_tickets = {}
+        for ticket in self.pending_and_recently_closed_tickets:
+            status_to_tickets.setdefault(ticket.completion_status, []).append(ticket)
+        return status_to_tickets
 
 
 ReviewRequestToReviewer = db.Table(
@@ -263,6 +281,7 @@ class Ticket(db.Model):
     summary = db.Column(db.String(length=256))
     component = db.Column(db.String(length=64))
     priority = db.Column(db.Integer)
+    time_changed = db.Column(db.DateTime)
 
     @property
     def needs_revision(self):
