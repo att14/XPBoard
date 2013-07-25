@@ -5,6 +5,12 @@
     margin: 1%;
 }
 
+.status-column-title {
+    float: left;
+    width: 100%;
+    text-align: center;
+}
+
 .sticky {
     float: left;
     width: 48%;

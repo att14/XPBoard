@@ -5,7 +5,12 @@ var XPBoard = angular.module('XPBoard', []).config(
      $routeProvider.when("/ticket_status", {
        templateUrl: templateRoot + "ticket_status.html",
        controller: TicketStatusCtrl
-     }).otherwise({
+     }).when("/review_status",
+       {
+         templateUrl: templateRoot + "review_status.html",
+         controller: ReviewStatusCtrl
+       }
+     ).otherwise({
        redirectTo: "/ticket_status"
      })
   }]

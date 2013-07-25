@@ -1,4 +1,4 @@
-function TicketStatusCtrl($scope) {
+TicketStatusCtrl = ['$scope', function ($scope) {
   $scope.statuses = ["New", "Assigned", "In Review", "Ship-It", "On Prod"]
   $scope.tickets = [
     {
@@ -58,4 +58,8 @@ function TicketStatusCtrl($scope) {
     }
   ]
   $scope.ticketsByStatus = _.groupBy($scope.tickets, 'status')
-}
+}];
+
+ReviewStatusCtrl = ['$scope', function ReviewStatusCtrl($scope) {
+  
+}];
