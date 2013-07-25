@@ -8,7 +8,7 @@ angular.module('XPBoard').factory('DataFetcher', ['$http', function($http) {
             'method': 'GET',
             'url': '/user-data',
             'params': {
-                'users': usernames
+                'user': usernames
             }
         }).success(this.successCallback);
     }

@@ -63,3 +63,10 @@ TicketStatusCtrl = ['$scope', function ($scope) {
 ReviewStatusCtrl = ['$scope', function ReviewStatusCtrl($scope) {
   
 }];
+
+UserStatusCtrl = ['$scope', 'DataFetcher', function UserStatusCtrl($scope, DataFetcher) {
+    var dataFetcher = new DataFetcher(function(users) {
+        $scope.users = users;
+    });
+    dataFetcher.userData(['atribone']);
+}]
