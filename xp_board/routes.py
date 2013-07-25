@@ -32,10 +32,10 @@ def tickets():
     )
 
 
-@app.route('/board')
+@app.route('/')
 def board():
     return render_template(
-        'board.html',
+        'home.html',
         users=models.User.list_by_column_values(config.users, 'username')
     )
 
