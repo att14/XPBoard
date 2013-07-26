@@ -132,7 +132,7 @@ class ReviewRequestETLByUser(etl.MultipleExtractETL):
 
 class ReviewRequestETLByID(etl.ETL):
 
-    extractor = ReviewRequestByIDExtractor()
+    extractor = ReviewRequestByIDExtractor
     transformer = ReviewRequestTransformer
     loader = ReviewRequestLoader
 
