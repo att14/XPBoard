@@ -26,24 +26,12 @@ def review_board_dashboard():
     )
 
 
+@app.route('/status')
 @app.route('/')
 def board():
     return render_template(
         'home.html',
         users=models.User.list_by_column_values(config.users, 'username')
-    )
-
-
-@app.route('/status')
-def status():
-    return render_template(
-        'status.html',
-        review_url_generator=lambda review_id: 'http://%s/r/%s' % (
-            config.rb_url,
-            review_id
-        ),
-        users=models.User.list_by_column_values(config.users, 'username'),
-        team_name=config.team_name,
     )
 
 

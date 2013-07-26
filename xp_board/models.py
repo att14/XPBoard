@@ -185,7 +185,7 @@ class ReviewRequest(db.Model):
         return {
             'id': self.id,
             'ship_it': self.has_ship_it,
-            'primary_reviewer': self.primary_reviewer.username
+            'primary_reviewer': self.primary_reviewer.username if self.primary_reviewer else ''
         }
 
     @property
