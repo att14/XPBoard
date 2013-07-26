@@ -1,4 +1,5 @@
-from flask import jsonify
+import json
+
 from flask import render_template
 from flask import request
 
@@ -64,4 +65,4 @@ def user_data():
     for user in users:
         data[user.username].update({'tickets': [ticket.as_dict for ticket in user.pending_tickets]})
 
-    return jsonify(data)
+    return json.dumps(data)
