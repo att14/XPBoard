@@ -1,6 +1,6 @@
 <div class="sticky">
   {{data.id}}
-  <span ng-show={{data.review_request_id}}>
+  <span ng-show={{data.review_request.length}}>
     - 
     <span ng-repeat="review_request in data.review_requests">
       {{review_request.id}}
