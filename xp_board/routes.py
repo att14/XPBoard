@@ -63,6 +63,6 @@ def user_data():
 
     data = dict((user.username, user.as_dict) for user in users)
     for user in users:
-        data[user.username].update({'tickets': [ticket.as_dict for ticket in user.pending_tickets]})
+        data[user.username].update({'tickets': [ticket.as_dict for ticket in user.pending_and_recently_closed_tickets]})
 
     return json.dumps(data)
