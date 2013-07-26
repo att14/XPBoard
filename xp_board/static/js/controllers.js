@@ -68,5 +68,5 @@ UserStatusCtrl = ['$scope', 'DataFetcher', function UserStatusCtrl($scope, DataF
     var dataFetcher = new DataFetcher(function(users) {
         $scope.users = users;
     });
-    dataFetcher.userData(['atribone']);
+    dataFetcher.userData(['atribone', 'imalison', 'anthony', 'sraveend']);
 }]

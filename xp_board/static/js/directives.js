@@ -23,6 +23,7 @@ angular.module('XPBoard').directive(
       },
       templateUrl: directiveTemplateRoot + "sticky.html",
       link: function(scope, element, attrs) {
+        
       }
     }
   }
