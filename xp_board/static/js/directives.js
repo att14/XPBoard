@@ -37,6 +37,21 @@ angular.module('XPBoard').directive(
     }
   }
 ).directive(
+  'userTable', function() {
+      return {
+        restrict: 'E',
+        replace: true,
+        scope: {
+          username: '=username',
+          ownedTickets: '=ownedTickets'
+        },
+        templateUrl: directiveTemplateRoot + 'user_table.html',
+        link: function(scope) {
+          scope.ticketsByStatus = _.groupBy(scope.ownedTickets, 'status');
+        }
+      }
+    }
+).directive(
   'ticketTable', function() {
     return {
       restrict: 'E',

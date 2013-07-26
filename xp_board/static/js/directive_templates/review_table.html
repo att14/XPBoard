@@ -1,0 +1,23 @@
+<table class="table table-hover sortable">
+  <thead>
+    <tr>
+      <th>Id</th>
+      <th>Submitter</th>
+      <th>Primary</th>
+      <th>Summary</th>
+      <th>Status</th>
+    </tr>
+  </thead>
+    <caption>reviews</caption>
+    <tbody>
+    <tr ng-repeat='reviewRequest in reviewRequests'>
+      <td>
+        <a href='{{reviewRequest.id}}'>{{reviewRequest.id}}</a>
+      </td>
+      <td>{{reviewRequest.submitter.username}}</td>
+      <td>{{reviewRequest.primary_reviewer.username}}</td>
+      <td>{{reviewRequest.summary}}</td>
+      <td>{{reviewRequest.ship_it_status}}</td>
+    </tr>
+  </tbody>
+</table>
