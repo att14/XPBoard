@@ -191,8 +191,8 @@ class ReviewRequest(db.Model):
     @property
     def needs_review(self):
         return self.most_recent_review is None or (
-            self.most_recent_review.time_submitted < self.time_last_updated and (
-                not self.has_open_issues and not self.has_ship_it
+            self.most_recent_review.time_submitted < self.time_last_updated or (
+                not self.has_open_issues and not self.has_ship_it_from_primary
             )
         )
 
