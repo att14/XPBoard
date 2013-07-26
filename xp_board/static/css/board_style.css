@@ -1,11 +1,20 @@
-.status-column {
+.sticky-column-container:first-child {
+    border: none;
+}
+
+.sticky-column-container:after {
+    clear:both;
+}
+
+.sticky-column {
     float: left;
     width: 18%;
     height: 100%;
     margin: 1%;
+    border-left: 1px solid;
 }
 
-.status-column-title {
+.sticky-column-title {
     float: left;
     width: 100%;
     text-align: center;
@@ -14,7 +23,10 @@
 .sticky {
     float: left;
     width: 48%;
+    box-sizing: border-box;
+    box-shadow: 0 1px 3px; /*rgba(0, 0, 0, 0.5);*/
     height: 100px;
-    background-color: green;
     margin: 1%;
+    border-radius: 10px;
+    border: 1px solid #ccc;
 }
