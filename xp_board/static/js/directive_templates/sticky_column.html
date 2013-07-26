@@ -2,5 +2,5 @@
   <span class="sticky-column-title" style="width: 100%;"> {{title}} </span>
   <sticky ticket="ticket"
           ng-repeat="ticket in tickets | filter:byOwnerOrReviewer"
-          ng-animate="{enter: sticky-enter, leave: sticky-leave, move: sticky-move}" />
+          ng-animate="{enter: 'sticky-enter', leave: 'sticky-leave', move: 'sticky-move'}" />
 </div>

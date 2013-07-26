@@ -1,9 +1,17 @@
 body {
-    background-color: #888;
+
 }
 
-a {
-    
+a:hover {
+    text-decoration: none;
+}
+
+#content {
+    text-align: center;
+}
+
+input {
+    margin: auto;
 }
 
 .sticky-column-container:after {
@@ -27,7 +35,7 @@ a {
     float: left;
     width: 99%;
     box-sizing: border-box;
-    height: 200px;
+    height: 80px;
     margin: 1%;
     padding: 5px;
     border-radius: 10px;
@@ -67,21 +75,23 @@ a {
 /* For angular animation */
 
 .sticky-leave-active, .sticky-enter-active, .sticky-move-active {
-    -webkit-transition: all linear 1s;
-    -moz-transition: all linear 1s;
-    -ms-transition: all linear 1s;
-    -o-transition: all linear 1s;
-    transition: all linear 1s;
+    -webkit-transition: all cubic-bezier(0.250, 0.460, 0.450, 0.940) 1s;
+    -moz-transition: all cubic-bezier(0.250, 0.460, 0.450, 0.940) 1s;
+    -ms-transition: all cubic-bezier(0.250, 0.460, 0.450, 0.940) 1s;
+    -o-transition: all cubic-bezier(0.250, 0.460, 0.450, 0.940) 1s;
+    transition: all cubic-bezier(0.250, 0.460, 0.450, 0.940) 1s;
 }
 
 .sticky-enter {
-    height: 0;
+    height: 0px;
 }
 
 .sticky-leave-active {
-    height: 0;
+    height: 0px;
+    margin: 0px;
+    padding: 0px;
 }
 
 .sticky-enter-active {
-    height: 200px;   
+    height: 80px;
 }

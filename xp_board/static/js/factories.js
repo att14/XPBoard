@@ -44,10 +44,13 @@ angular.module('XPBoard').factory('TicketData', ['$http', function($http) {
   return config;
 }]).factory('status', function() {
   return {
-    "new": "New",
-    "assigned": "Assigned",
-    "in_review": "In Review",
-    "ship_it": "Ship-It",
-    "closed": "In Production"
+    remapping: {
+      "new": "New",
+      "assigned": "Assigned",
+      "in_review": "In Review",
+      "ship_it": "Ship-It",
+      "closed": "In Production"
+    },
+    order: ["new", "assigned", "in_review", "ship_it", "closed"]
   };
 });
