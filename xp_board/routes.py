@@ -1,4 +1,4 @@
-import json
+import simplejson
 
 from flask import render_template
 from flask import request
@@ -58,14 +58,14 @@ def user_data():
             'tickets': [ticket.as_dict for ticket in user.pending_and_recently_closed_tickets]}
         )
 
-    return json.dumps(data)
+    return simplejson.dumps(data)
 
 
 @app.route('/tickets')
 def tickets():
-    usernames = request.args.getlist('user') or config.usernames
+    usernames = request.args.getlist('user') or config.users
     ticket_query = models.Ticket.query_reviewing_and_owned_by_usernames(
         usernames,
         models.Ticket.open_or_changed_in_last()
     )
-    return [ticket.as_dict for ticket in ticket_query]
+    return simplejson.dumps([ticket.as_dict for ticket in ticket_query])

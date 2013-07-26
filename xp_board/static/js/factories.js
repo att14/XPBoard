@@ -9,7 +9,7 @@ angular.module('XPBoard').factory('TicketData', ['$http', function($http) {
     $.ajax({
       url: '/tickets',
       data: {
-        user: usernames || this.usernames;
+        user: usernames || this.usernames
       },
       async: false,
       traditional: true,
@@ -17,17 +17,15 @@ angular.module('XPBoard').factory('TicketData', ['$http', function($http) {
         result = JSON.parse(users);
       }
     });
-
-    TicketData.prototype.__defineGetter__('tickets', function() {
-      if(this.ticketCache != null) return this.ticketCache;
-      this.ticketCache = this.ticketsByUsernames();
-      return this.ticketCache;
-    });
-
-    return TicketData();
+    return result;
   }
 
-  return DataFetcher;
+  TicketData.prototype.__defineGetter__('tickets', function() {
+    if(this.ticketCache != null) return this.ticketCache;
+    this.ticketCache = this.ticketsByUsernames();
+    return this.ticketCache;
+  });
+  return new TicketData();
 }]).factory('URLGenerator', [function() {
   return {
     getReviewRequestURL: function(reviewRequestID) {

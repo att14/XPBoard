@@ -6,6 +6,7 @@
 // $scope.statuses = ["New", "Assigned", "In Review", "Ship-It", "On Prod"]
 
 TicketsByStatusCtrl = ['$scope', 'TicketData', function ($scope, TicketData) {
+  debugger;
   $scope.ticketsByStatus = _.groupBy(TicketData.tickets, 'status');
 }];
 
