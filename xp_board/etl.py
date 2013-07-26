@@ -1,6 +1,8 @@
 class ETL(object):
 
-    # `extractor` is an object that knows how to fetch data to be
+    default_kwargs = {}
+
+    # `extractor` is a class whose instances know how to fetch data to be
     # transformed from a single argument.
     extractor = None
 
@@ -12,11 +14,16 @@ class ETL(object):
     # transform phase.
     loader = None
 
-    def __init__(self, identifier):
+    def __init__(self, identifier, **kwargs):
         self.identifier = identifier
         self.raw_data = None
         self.transformed = None
         self.loaded = None
+        self.kwargs = kwargs
+
+    @property
+    def extractor_kwargs(self):
+        return self.kwargs or self.default_kwargs
 
     def execute_transform_load(self):
         self.transform()
@@ -30,7 +37,7 @@ class ETL(object):
         return (not force and self.check_existing_value()) or self.execute_transform_load()
 
     def extract(self):
-        self.raw_data = self.extractor.extract(self.identifier)
+        self.raw_data = self.extractor(**self.extractor_kwargs).extract(self.identifier)
         return self.raw_data
 
     def transform(self):
@@ -66,8 +73,7 @@ class MultipleExtractETL(ETL):
 
 class NoOpExtractor(object):
 
-    @classmethod
-    def extract(self, obj):
+    def extract(self, obj, **kwargs):
         return obj
 
 

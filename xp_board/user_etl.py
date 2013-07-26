@@ -7,7 +7,6 @@ from . import models
 
 class UserExtractor(object):
 
-    @classmethod
     def extract(self, username):
         return reviewboard_client.client.get_user_info(username).next()
 

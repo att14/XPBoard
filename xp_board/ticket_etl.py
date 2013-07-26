@@ -52,6 +52,6 @@ TicketTransformer = etl.SubTransformTransformer([
 
 class TicketETL(etl.ETL):
 
-    extractor = TicketExtractor()
+    extractor = TicketExtractor
     transformer = TicketTransformer
     loader = etl.ModelLoader(models.Ticket)

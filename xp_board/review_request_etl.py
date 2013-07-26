@@ -11,7 +11,7 @@ from . import user_etl
 
 class ReviewRequestByUsernameExtractor(object):
 
-    def __init__(self, number_of_days_to_look_back=45, max_results=100, **additional_filters):
+    def __init__(self, number_of_days_to_look_back=15, max_results=100, **additional_filters):
         self.number_of_days_to_look_back = number_of_days_to_look_back
         self.max_results = max_results
         self.additional_filters = additional_filters
@@ -119,7 +119,9 @@ def _check_for_existing_value(review_request_resource):
 
 class ReviewRequestETLByUser(etl.MultipleExtractETL):
 
-    extractor = ReviewRequestByUsernameExtractor(status="pending")
+    default_kwargs = {'status': 'pending'}
+
+    extractor = ReviewRequestByUsernameExtractor
     transformer = ReviewRequestTransformer
     loader = etl.ModelLoader(models.ReviewRequest)
 
