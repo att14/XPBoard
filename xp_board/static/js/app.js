@@ -4,15 +4,15 @@ var XPBoard = angular.module('XPBoard', []).config(
      var templateRoot = "/static/js/view_templates/";
      $routeProvider.when("/ticket_status", {
        templateUrl: templateRoot + "ticket_status.html",
-       controller: TicketStatusCtrl
+       controller: TicketsByStatusCtrl
      }).when("/review_status", {
        templateUrl: templateRoot + "review_status.html",
-       controller: ReviewStatusCtrl
+       controller: ReviewsByUserCtrl
      }).when("/user_status", {
        templateUrl: templateRoot + "user_status.html",
-       controller: UserStatusCtrl
+       controller: TicketsByOwnerCtrl
      }).otherwise({
-       redirectTo: "/ticket_status"
+       redirectTo: "/by_owner"
      })
   }]
 );

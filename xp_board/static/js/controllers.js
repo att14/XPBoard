@@ -1,20 +1,19 @@
-TicketStatusCtrl = ['$scope', 'DataFetcher', function ($scope, DataFetcher) {
-  var dataFetcher = new DataFetcher();
-  $scope.tickets = dataFetcher.ticketDataForUsers([
-    'atribone', 'imalison', 'anthony', 'sraveend', 'dersek', 'ssridhar',
-    'yoann', 'selston', 'cheng', 'bthiell', 'arvin', 'ychan', 'yli'
-  ]);
-  $scope.statuses = ["New", "Assigned", "In Review", "Ship-It", "On Prod"]
-  $scope.ticketsByStatus = _.groupBy($scope.tickets, 'status');
+// var usernames = [
+//   'atribone', 'imalison', 'anthony', 'sraveend', 'dersek', 'ssridhar',
+//   'yoann', 'selston', 'cheng', 'bthiell', 'arvin', 'ychan', 'yli',
+//   'clee', 'matthew', 'ywchen', 'joshua'
+// ];
+// $scope.statuses = ["New", "Assigned", "In Review", "Ship-It", "On Prod"]
+
+TicketsByStatusCtrl = ['$scope', 'TicketData', function ($scope, TicketData) {
+  $scope.ticketsByStatus = _.groupBy(TicketData.tickets, 'status');
 }];
 
-ReviewStatusCtrl = ['$scope', function ReviewStatusCtrl($scope) {
-
+TicketsByOwnerCtrl = ['$scope', 'TicketData', function UserStatusCtrl($scope, TicketData) {
+  $scope.ticketsByOwner = _.groupBy(TicketData.tickets, 'owner');
 }];
 
-UserStatusCtrl = ['$scope', 'DataFetcher', function UserStatusCtrl($scope, DataFetcher) {
-    var dataFetcher = new DataFetcher(function(users) {
-      $scope.users = users;
-    });
-    dataFetcher.userData(['atribone', 'imalison', 'anthony', 'sraveend']);
-}]
+
+ReviewsByUserCtrl = ['$scope', function ReviewStatusCtrl($scope) {
+
+}];

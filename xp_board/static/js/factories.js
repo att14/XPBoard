@@ -1,38 +1,40 @@
-angular.module('XPBoard').factory('DataFetcher', ['$http', function($http) {
-    function DataFetcher(successCallback) {
-        this.successCallback = successCallback;
+angular.module('XPBoard').factory('TicketData', ['$http', function($http) {
+  function TicketData(usernames) {
+    this.usernames = usernames || [];
+    this.ticketCache = null;
+  }
+
+  TicketData.prototype.ticketsByUsernames = function(usernames) {
+    var result;
+    $.ajax({
+      url: '/tickets',
+      data: {
+        user: usernames || this.usernames;
+      },
+      async: false,
+      traditional: true,
+      success: function(users) {
+        result = JSON.parse(users);
+      }
+    });
+
+    TicketData.prototype.__defineGetter__('tickets', function() {
+      if(this.ticketCache != null) return this.ticketCache;
+      this.ticketCache = this.ticketsByUsernames();
+      return this.ticketCache;
+    });
+
+    return TicketData();
+  }
+
+  return DataFetcher;
+}]).factory('URLGenerator', [function() {
+  return {
+    getReviewRequestURL: function(reviewRequestID) {
+      
+    },
+    getTicketURL: function(ticketID) {
+      
     }
-
-    DataFetcher.prototype.userData = function(usernames) {
-        $http({
-            'method': 'GET',
-            'url': '/user-data',
-            'params': {
-                'user': usernames
-            }
-        }).success(this.successCallback);
-    }
-
-    DataFetcher.prototype.ticketDataForUsers = function(usernames) {
-        var result;
-
-        $.ajax({
-            url: '/user-data',
-            data: {
-                user: usernames
-            },
-            async: false,
-            traditional: true,
-            success: function(users) {
-                users = JSON.parse(users);
-                result = _.reduce(users, function(memo, user) {
-                    memo.push.apply(memo, user.tickets); return memo;
-                }, []);
-            }
-        });
-
-        return result;
-    }
-
-    return DataFetcher;
+  }
 }]);

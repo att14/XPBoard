@@ -45,6 +45,8 @@ def upsert_by(cls, upsert_key, **kwargs):
 
 
 db = SQLAlchemy(app)
+db.engine.echo = True
+
 db.Model.list_by_column_values = classmethod(list_by_column_values)
 db.Model.list_by_ids = classmethod(list_by_ids)
 db.Model.find_by_id = classmethod(find_by_id)
@@ -180,16 +182,27 @@ class ReviewRequest(db.Model):
     def as_dict(self):
         return {
             'id': self.id,
-            'ship_it': self.has_ship_it
+            'ship_it': self.has_ship_it,
+            'primary_reviewer': self.primary_reviewer.username
         }
 
     @property
     def needs_review(self):
-        return self.most_recent_review is None or (self.most_recent_review.time_submitted < self.time_last_updated and not self.has_open_issues and not self.has_ship_it)
+        return self.most_recent_review is None or (
+            self.most_recent_review.time_submitted < self.time_last_updated and (
+                not self.has_open_issues and not self.has_ship_it
+            )
+        )
 
     @property
     def needs_revision(self):
-        return self.has_open_issues or (self.most_recent_review.time_submitted == self.time_last_updated and not self.has_ship_it)
+        return self.has_open_issues or (
+            self.most_recent_review is not None and (
+                self.most_recent_review.time_submitted == self.time_last_updated and (
+                    not self.has_ship_it
+                )
+            )
+        )
 
     @property
     def has_open_issues(self):
@@ -297,17 +310,28 @@ class Ticket(db.Model):
     def as_dict(self):
         return {
             'id': self.id,
-            'status': self.status,
+            'status': self.completion_status,
             'summary': self.summary,
             'priority': self.priority,
             'resolution': self.resolution,
-            'review_requests': [rr.as_dict for rr in self.review_requests]
+            'owner': self.owner.username,
+            'reporter': self.reporter.username,
+            'review_requests': [rr.as_dict for rr in self.review_requests],
+            'needs_revision': self.needs_revision,
+            'needs_review': self.needs_review
         }
 
     @property
     def needs_revision(self):
         return any([
             review_request.needs_revision
+            for review_request in self.review_requests
+        ])
+
+    @property
+    def needs_review(self):
+        return any([
+            review_request.needs_review
             for review_request in self.review_requests
         ])
 
@@ -324,6 +348,44 @@ class Ticket(db.Model):
             return 'in_review'
 
         return self.status
+
+    @classmethod
+    def query_reviewing_and_owned_by_usernames(cls, usernames, *ticket_filters):
+        return cls.query_owned_by_usernames(usernames, *ticket_filters).union(
+            cls.query_reviewing_by_usernames(usernames, *ticket_filters)
+        )
+
+    @classmethod
+    def query_owned_by_usernames(cls, usernames, *ticket_filters):
+        return cls.query.join(
+            User, User.id == cls.owner_id
+        ).filter(
+            User.username.in_(usernames)
+        ).filter(*ticket_filters)
+
+    @classmethod
+    def query_reviewing_by_usernames(cls, usernames, *ticket_filters):
+        return cls.query.join(ReviewRequest, cls.review_requests).join(
+            User, ReviewRequest.primary_reviewer_id == User.id
+        ).filter(
+            User.username.in_(usernames)
+        ).filter(*ticket_filters)
+
+    @classmethod
+    def query_reported_by_usernames(cls, usernames, *ticket_filters):
+        return cls.query.join(
+            User, User.id == cls.reporter_id
+        ).filter(
+            User.username.in_(usernames)
+        ).filter(*ticket_filters)
+
+    @classmethod
+    def open_or_changed_after(cls, past_time):
+        return cls.status != 'closed' or cls.time_changed > past_time
+
+    @classmethod
+    def open_or_changed_in_last(cls, time_delta=datetime.timedelta(days=7)):
+        return cls.open_or_changed_after(datetime.datetime.now() - time_delta)
 
     owner = db.relationship(
         User,
@@ -342,5 +404,6 @@ class Ticket(db.Model):
     review_requests = db.relationship(
         ReviewRequest,
         secondary=ReviewRequestToTicket,
-        backref='tickets'
+        backref='tickets',
+        lazy='dyanmic'
     )

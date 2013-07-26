@@ -1,7 +1,3 @@
-.sticky-column-container:first-child {
-    border: none;
-}
-
 .sticky-column-container:after {
     clear:both;
 }
@@ -11,7 +7,6 @@
     width: 18%;
     height: 100%;
     margin: 1%;
-    border-left: 1px solid;
 }
 
 .sticky-column-title {
