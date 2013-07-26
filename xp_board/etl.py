@@ -56,8 +56,8 @@ class MultipleExtractETL(ETL):
         return None
 
     @classmethod
-    def execute(cls, identifier):
-        for data in cls.extractor.extract(identifier):
+    def execute(cls, identifier, **kwargs):
+        for data in cls.extractor(**kwargs).extract(identifier):
             yield cls.check_for_existing_value(data) or cls(data).execute_transform_load()
 
     @classmethod
