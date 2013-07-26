@@ -64,6 +64,8 @@ class User(db.Model):
 
     username = db.Column(db.String(length=20), unique=True)
 
+    color = db.Column(db.String(length=20))
+
     @property
     def as_dict(self):
         return {'first': self.first_name, 'last': self.last_name}
@@ -381,7 +383,7 @@ class Ticket(db.Model):
 
     @classmethod
     def open_or_changed_after(cls, past_time):
-        return cls.status != 'closed' or cls.time_changed > past_time
+        return db.or_(cls.status != 'closed', cls.time_changed > past_time)
 
     @classmethod
     def open_or_changed_in_last(cls, time_delta=datetime.timedelta(days=7)):

@@ -73,8 +73,9 @@ def tickets():
 
 @app.route('/config')
 def get_config():
+    users = models.User.list_by_column_values(config.users, column_name='username')
     return simplejson.dumps({
         'rb_url': config.rb_url,
         'trac_url': config.trac_url,
-        'users': config.users
+        'user_colors': dict((user.username, user.color) for user in users)
     })

@@ -1,5 +1,3 @@
-import datetime
-
 from . import etl
 from . import models
 from . import user_etl
@@ -26,15 +24,10 @@ class PriorityTransformer(etl.SingleKeySubTransform):
         return int(ticket.priority[0])
 
 
-TRAC_TIME_FORMAT = "%Y%m%dT%H:%M:%S"
-
 class TicketTimeTransform(etl.ItemGetterTransform):
 
     def get_value(self, ticket, transformed):
-        return datetime.datetime.strptime(
-            ticket[self.input_key].value,
-            TRAC_TIME_FORMAT
-        )
+        return ticket.time_changed
 
 
 TicketTransformer = etl.SubTransformTransformer([
@@ -55,3 +48,9 @@ class TicketETL(etl.ETL):
     extractor = TicketExtractor
     transformer = TicketTransformer
     loader = etl.ModelLoader(models.Ticket)
+
+    def check_for_existing_value(self):
+        existing_ticket = models.Ticket.find_by_id(self.raw_data.trac_id)
+        if not existing_ticket or existing_ticket.time_changed < self.raw_data.time_changed:
+            return None
+        return existing_ticket

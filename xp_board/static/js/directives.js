@@ -21,11 +21,13 @@ angular.module('XPBoard').directive(
         title: '=title'
       },
       templateUrl: directiveTemplateRoot + 'sticky_column.html',
-      link: function(scope, element, attrs) {}
+      link: function(scope, element, attrs) {
+        
+      }
     }
   }
 ).directive(
-  'sticky', ['URLGenerator', 'status', function(URLGenerator) {
+  'sticky', ['URLGenerator', 'config', function(URLGenerator, config) {
     return {
       restrict: 'E',
       replace: true,
@@ -35,7 +37,8 @@ angular.module('XPBoard').directive(
       templateUrl: directiveTemplateRoot + 'sticky.html',
       link: function(scope, element, attrs) {
         scope.URLGenerator = URLGenerator;
-        console.log(scope.ticket);
+        scope.style = {"background-color": config.user_colors[scope.ticket.owner]};
+        console.log(scope.style);
       }
     }
   }]

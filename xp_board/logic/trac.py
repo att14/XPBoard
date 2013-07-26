@@ -6,7 +6,7 @@ from .. import ticket_etl
 def refresh(usernames):
     refreshed = set()
     for username in usernames:
-        for ticket in fetch_tickets(username):
+        for ticket in fetch_tickets(username, with_closed=True):
             refreshed.add(ticket.id)
             yield ticket
 
@@ -18,8 +18,8 @@ def refresh(usernames):
         yield ticket
 
 
-def fetch_tickets(username):
-    for trac_id in trac_client.client.get_unclosed_ticket_ids_for_user(username):
+def fetch_tickets(username, with_closed=False):
+    for trac_id in trac_client.client.get_ticket_ids_for_user(username, with_closed=with_closed):
         yield ticket_etl.TicketETL(trac_id).execute()
 
 

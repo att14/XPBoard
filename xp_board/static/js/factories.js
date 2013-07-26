@@ -36,7 +36,8 @@ angular.module('XPBoard').factory('TicketData', ['$http', function($http) {
     }
   }
 }]).factory('config', ['$http', function($http) {
-  var config = {}
+  var config = {
+  }
   $http.get('/config').success(function(data) {
     _.extend(config, data);
   });
@@ -47,6 +48,6 @@ angular.module('XPBoard').factory('TicketData', ['$http', function($http) {
     "assigned": "Assigned",
     "in_review": "In Review",
     "ship_it": "Ship-It",
-    "completed": "In Production"
+    "closed": "In Production"
   };
 });

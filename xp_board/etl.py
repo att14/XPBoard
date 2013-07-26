@@ -29,12 +29,12 @@ class ETL(object):
         self.transform()
         return self.load()
 
-    def check_existing_value(self):
+    def check_for_existing_value(self):
         return None
 
     def execute(self, force=False):
         self.extract()
-        return (not force and self.check_existing_value()) or self.execute_transform_load()
+        return (not force and self.check_for_existing_value()) or self.execute_transform_load()
 
     def extract(self):
         self.raw_data = self.extractor(**self.extractor_kwargs).extract(self.identifier)
