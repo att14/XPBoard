@@ -1,3 +1,5 @@
 <div id="content">
-  <sticky-column-view tickets-by-title="ticketsByStatus" />
+  <input ng-model="searchText">
+  <sticky-column-view tickets-by-title="ticketsByStatus"
+                      search-text="searchText"/>
 </div>

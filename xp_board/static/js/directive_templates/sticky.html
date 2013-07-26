@@ -1,17 +1,20 @@
 <div class="sticky" ng-style="style">
-  <span class="owner"> {{ ticket.owner }} </span>
-  <a href="{{ URLGenerator.getTicketURL(ticket.id) }}">
-    {{ticket.id}}
-  </a>
-  <span ng-hide="ticket.review_requests.length < 1">
-    - 
-    <span ng-repeat="review_request in ticket.review_requests">
-    <a href="{{ URLGenerator.getReviewRequestURL(review_request.id) }}">
-      {{review_request.id}}
-    </a>
-    <span class="reviewer"> {{ review_request.primary_reviewer }} </span>
+  <div class="sticky-header">
+    <span class="ticket-with-owner">
+      <span class="owner"> {{ ticket.owner }} </span>
+      <a class="ticket-id" href="{{ URLGenerator.getTicketURL(ticket.id) }}">
+        {{ticket.id}}
+      </a>
     </span>
-  </span>
+    <span class="review-request-with-reviewer" ng-hide="ticket.review_requests.length < 1">
+      <span ng-repeat="review_request in ticket.review_requests">
+        <a class="review-request-id" href="{{ URLGenerator.getReviewRequestURL(review_request.id) }}">
+          {{review_request.id}}
+        </a>
+        <span class="reviewer"> {{ review_request.primary_reviewer }} </span>
+      </span>
+    </span>
+  </div>
   <br />
-  {{ticket.summary}}
+  <p class="summary">{{ticket.summary}}</p>
 </div>

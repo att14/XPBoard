@@ -5,7 +5,8 @@ angular.module('XPBoard').directive(
       restrict: 'E',
       replace: true,
       scope: {
-        ticketsByTitle: '=ticketsByTitle'
+        ticketsByTitle: '=ticketsByTitle',
+        searchText: '=searchText'
       },
       templateUrl: directiveTemplateRoot + 'sticky_column_view.html',
       link: function(scope) {}
@@ -18,11 +19,21 @@ angular.module('XPBoard').directive(
       replace: true,
       scope: {
         tickets: '=tickets',
-        title: '=title'
+        title: '=title',
+        searchText: '=searchText'
       },
       templateUrl: directiveTemplateRoot + 'sticky_column.html',
       link: function(scope, element, attrs) {
-        
+        scope.byOwnerOrReviewer = function(ticket) {
+          if(!scope.searchText) return false;
+          var matchers = scope.searchText.split("|");
+          return _.any(matchers, function(matcher) {
+            return ticket.owner.indexOf(matcher) > -1 || (
+              ticket.review_requests.length > 0 &&
+                ticket.review_requests[0].primary_reviewer.indexOf(matcher) > -1
+            );
+          });
+        }
       }
     }
   }
@@ -38,7 +49,6 @@ angular.module('XPBoard').directive(
       link: function(scope, element, attrs) {
         scope.URLGenerator = URLGenerator;
         scope.style = {"background-color": config.user_colors[scope.ticket.owner]};
-        console.log(scope.style);
       }
     }
   }]

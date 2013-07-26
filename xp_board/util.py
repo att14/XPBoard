@@ -1,8 +1,10 @@
 import datetime
 import logging
 import os
+import random
 
 from . import config
+from . import models
 
 
 logging.basicConfig(
@@ -40,3 +42,37 @@ def log_review_request(review_request):
             datetime.datetime.now()
         )
     )
+
+
+pastel_colors = (
+    "#F7977A",
+    "#F9AD81",
+    "#FDC68A",
+    "#FFF79A",
+    "#C4DF9B",
+    "#A2D39C",
+    "#82CA9D",
+    "#7BCDC8",
+    "#6ECFF6",
+    "#7EA7D8",
+    "#8493CA",
+    "#8882BE",
+    "#A187BE",
+    "#BC8DBF",
+    "#F49AC2",
+    "#F6989D",
+    "#ffc",
+    "#6B4226"
+)
+
+
+def set_colors_for_users(colors=pastel_colors):
+    remaining_colors = list(colors)
+    users = models.User.list_by_column_values(config.users, column_name='username')
+    for user in users:
+        if not remaining_colors:
+            remaining_colors = list(colors)
+        user.color = random.choice(remaining_colors)
+        remaining_colors.remove(user.color)
+    models.db.session.commit()
+    return users

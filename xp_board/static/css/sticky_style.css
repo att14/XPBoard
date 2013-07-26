@@ -1,5 +1,9 @@
 body {
-    background-color: #cccccc;
+    background-color: #888;
+}
+
+a {
+    
 }
 
 .sticky-column-container:after {
@@ -46,4 +50,38 @@ body {
   -moz-transition: -moz-transform .15s linear;
   -o-transition: -o-transform .15s linear;
   -webkit-transition: -webkit-transform .15s linear;
+}
+
+.ticket-with-owner {
+    float: left;
+}
+
+.review-request-with-reviewer {
+    float: right;
+}
+
+.sticky-header:after {
+    clear: both;
+}
+
+/* For angular animation */
+
+.sticky-leave-active, .sticky-enter-active, .sticky-move-active {
+    -webkit-transition: all linear 1s;
+    -moz-transition: all linear 1s;
+    -ms-transition: all linear 1s;
+    -o-transition: all linear 1s;
+    transition: all linear 1s;
+}
+
+.sticky-enter {
+    height: 0;
+}
+
+.sticky-leave-active {
+    height: 0;
+}
+
+.sticky-enter-active {
+    height: 200px;   
 }
