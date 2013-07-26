@@ -10,7 +10,7 @@ var XPBoard = angular.module('XPBoard', []).config(
        controller: ReviewsByUserCtrl
      }).when("/user_status", {
        templateUrl: templateRoot + "user_status.html",
-       controller: TicketsByOwnerCtrl
+       controller: UserStatusCtrl
      }).otherwise({
        redirectTo: "/by_owner"
      })

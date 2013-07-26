@@ -1,0 +1,23 @@
+<table class='table table-hover sortable'>
+  <thead>
+    <tr>
+        <th class='ticket'>Ticket #</th>
+        <th>Priority</th>
+        <th>Summary</th>
+        <th>Reviews</th>
+    </tr>
+    </thead>
+    <tbody>
+      <tr ng-repeat='ticket in tickets'>
+        <td>
+          <a href='https://trac.yelpcorp.com/ticket/{{ticket.id}}'>{{ticket.id}}</a>
+        </td>
+        <td>{{ticket.priority}}</td>
+        <td>{{ticket.summary}}</td>
+        <td>
+           <a ng-repeat='reviewRequest in ticket.review_requests'
+              href='https://reviewboard.yelpcorp.com/r/{{review_request.id}}'></a>
+        </td>
+      </tr>
+    </tbody>
+</table>

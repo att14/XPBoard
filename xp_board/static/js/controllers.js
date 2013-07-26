@@ -5,16 +5,20 @@
 // ];
 // $scope.statuses = ["New", "Assigned", "In Review", "Ship-It", "On Prod"]
 
-TicketsByStatusCtrl = ['$scope', 'TicketData', function ($scope, TicketData) {
-  debugger;
+TicketsByStatusCtrl = ['$scope', 'TicketData', function($scope, TicketData) {
   $scope.ticketsByStatus = _.groupBy(TicketData.tickets, 'status');
 }];
 
-TicketsByOwnerCtrl = ['$scope', 'TicketData', function UserStatusCtrl($scope, TicketData) {
+TicketsByOwnerCtrl = ['$scope', 'TicketData', function($scope, TicketData) {
   $scope.ticketsByOwner = _.groupBy(TicketData.tickets, 'owner');
 }];
 
 
-ReviewsByUserCtrl = ['$scope', function ReviewStatusCtrl($scope) {
+ReviewsByUserCtrl = ['$scope', function($scope) {
 
 }];
+
+UserStatusCtrl = ['$scope', 'TicketData', function($scope, TicketData) {
+  $scope.tickets = TicketData.ticketsByUsernames(['atribone']);
+  $scope.title = 'Derp';
+}]

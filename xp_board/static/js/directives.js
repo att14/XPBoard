@@ -1,15 +1,14 @@
-var directiveTemplateRoot = "/static/js/directive_templates/";
+var directiveTemplateRoot = '/static/js/directive_templates/';
 angular.module('XPBoard').directive(
   'stickyColumnView', function() {
     return {
       restrict: 'E',
       replace: true,
       scope: {
-        itemsByTitle: "=itemsByTitle"
+        itemsByTitle: '=itemsByTitle'
       },
       templateUrl: directiveTemplateRoot + 'sticky_column_view.html',
-      link: function(scope) {
-      }
+      link: function(scope) {}
     }
   }
 ).directive(
@@ -18,12 +17,11 @@ angular.module('XPBoard').directive(
       restrict: 'E',
       replace: true,
       scope: {
-        items: "=items",
-        title: "=title"
+        items: '=items',
+        title: '=title'
       },
-      templateUrl: directiveTemplateRoot + "sticky_column.html",
-      link: function(scope, element, attrs) {
-      }
+      templateUrl: directiveTemplateRoot + 'sticky_column.html',
+      link: function(scope, element, attrs) {}
     }
   }
 ).directive(
@@ -32,11 +30,23 @@ angular.module('XPBoard').directive(
       restrict: 'E',
       replace: true,
       scope: {
-        data: "=data"
+        data: '=data'
       },
-      templateUrl: directiveTemplateRoot + "sticky.html",
-      link: function(scope, element, attrs) {
-      }
+      templateUrl: directiveTemplateRoot + 'sticky.html',
+      link: function(scope, element, attrs) {}
+    }
+  }
+).directive(
+  'ticketTable', function() {
+    return {
+      restrict: 'E',
+      replace: true,
+      scope: {
+        tickets: '=tickets',
+        title: '=title'
+      },
+      templateUrl: directiveTemplateRoot + 'ticket_table.html',
+      link: function(scope) {}
     }
   }
 );
