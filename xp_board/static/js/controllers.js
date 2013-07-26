@@ -57,7 +57,7 @@ TicketStatusCtrl = ['$scope', function ($scope) {
       status: "On Prod"
     }
   ]
-  $scope.ticketsByStatus = _.groupBy($scope.tickets, 'status')
+  $scope.ticketsByStatus = _.groupBy($scope.tickets, 'status');
 }];
 
 ReviewStatusCtrl = ['$scope', function ReviewStatusCtrl($scope) {
@@ -66,7 +66,7 @@ ReviewStatusCtrl = ['$scope', function ReviewStatusCtrl($scope) {
 
 UserStatusCtrl = ['$scope', 'DataFetcher', function UserStatusCtrl($scope, DataFetcher) {
     var dataFetcher = new DataFetcher(function(users) {
-        $scope.users = users;
+      $scope.users = users;
     });
     dataFetcher.userData(['atribone', 'imalison', 'anthony', 'sraveend']);
 }]

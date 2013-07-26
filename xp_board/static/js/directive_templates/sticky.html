@@ -1,7 +1,10 @@
 <div class="sticky">
-  {{data.ticket_id}}
+  {{data.id}}
   <span ng-show={{data.review_request_id}}>
-    - {{data.review_request_id}}
+    - 
+    <span ng-repeat="review_request in data.review_requests">
+      {{review_request.id}}
+    </span>
   </span>
   <br />
   {{data.summary}}
