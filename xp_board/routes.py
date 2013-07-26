@@ -5,6 +5,7 @@ from flask import request
 
 from . import app
 from . import config
+from . import logic
 from . import models
 
 
@@ -79,3 +80,16 @@ def get_config():
         'trac_url': config.trac_url,
         'user_colors': dict((user.username, user.color) for user in users)
     })
+
+
+@app.route('/refresh/<username>')
+def refresh_user(username):
+    usernames = [username]
+    logic.rb.refresh(usernames)
+    logic.trac.refresh(usernames)
+    ticket_query = models.Ticket.query_reviewing_and_owned_by_usernames(
+        usernames,
+        models.Ticket.open_or_changed_in_last()
+    )
+    print "fun"
+    return simplejson.dumps([ticket.as_dict for ticket in ticket_query])

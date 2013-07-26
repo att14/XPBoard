@@ -1,12 +1,18 @@
 var TicketsByStatusCtrl = ['$scope', 'TicketData', 'status', function($scope, TicketData, status) {
   $scope.searchText = "";
   var ticketsByStatus =  _.groupBy(TicketData.tickets, 'status');
-  $scope.ticketsByStatus = _.map(status.order, function(statusEnum) {
-    return {
-      title: status.remapping[statusEnum],
-      tickets: ticketsByStatus[statusEnum]
-    }
-  });
+  $scope.ticketsByStatus = [];
+  setTimeout(
+    function() {
+      $scope.ticketsByStatus = _.map(status.order, function(statusEnum) {
+        return {
+          title: status.remapping[statusEnum],
+          tickets: ticketsByStatus[statusEnum]
+        }
+      });
+      $scope.$apply();
+    }, 30
+  );
 }];
 
 var TicketsByOwnerCtrl = ['$scope', 'TicketData', function($scope, TicketData) {
