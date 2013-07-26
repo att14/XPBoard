@@ -1,5 +1,18 @@
 var directiveTemplateRoot = "/static/js/directive_templates/";
 angular.module('XPBoard').directive(
+  'stickyColumnView', function() {
+    return {
+      restrict: 'E',
+      replace: true,
+      scope: {
+        itemsByTitle: "=itemsByTitle"
+      },
+      templateUrl: directiveTemplateRoot + 'sticky_column_view.html',
+      link: function(scope) {
+      }
+    }
+  }
+).directive(
   'stickyColumn', function() {
     return {
       restrict: 'E',
@@ -23,6 +36,7 @@ angular.module('XPBoard').directive(
       },
       templateUrl: directiveTemplateRoot + "sticky.html",
       link: function(scope, element, attrs) {
+        console.log(scope.data);
       }
     }
   }
