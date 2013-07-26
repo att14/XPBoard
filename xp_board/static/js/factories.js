@@ -26,13 +26,27 @@ angular.module('XPBoard').factory('TicketData', ['$http', function($http) {
     return this.ticketCache;
   });
   return new TicketData();
-}]).factory('URLGenerator', [function() {
+}]).factory('URLGenerator', ['config', function(config) {
   return {
     getReviewRequestURL: function(reviewRequestID) {
-      
+      return "https://" + config.rb_url + '/r/' + reviewRequestID
     },
     getTicketURL: function(ticketID) {
-      
+      return "https://" + config.trac_url + '/ticket/' + ticketID
     }
   }
-}]);
+}]).factory('config', ['$http', function($http) {
+  var config = {}
+  $http.get('/config').success(function(data) {
+    _.extend(config, data);
+  });
+  return config;
+}]).factory('status', function() {
+  return {
+    "new": "New",
+    "assigned": "Assigned",
+    "in_review": "In Review",
+    "ship_it": "Ship-It",
+    "completed": "In Production"
+  };
+});

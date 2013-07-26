@@ -45,7 +45,7 @@ def upsert_by(cls, upsert_key, **kwargs):
 
 
 db = SQLAlchemy(app)
-db.engine.echo = True
+# db.engine.echo = True
 
 db.Model.list_by_column_values = classmethod(list_by_column_values)
 db.Model.list_by_ids = classmethod(list_by_ids)

@@ -69,3 +69,12 @@ def tickets():
         models.Ticket.open_or_changed_in_last()
     )
     return simplejson.dumps([ticket.as_dict for ticket in ticket_query])
+
+
+@app.route('/config')
+def get_config():
+    return simplejson.dumps({
+        'rb_url': config.rb_url,
+        'trac_url': config.trac_url,
+        'users': config.users
+    })

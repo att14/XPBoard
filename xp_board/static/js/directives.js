@@ -5,7 +5,7 @@ angular.module('XPBoard').directive(
       restrict: 'E',
       replace: true,
       scope: {
-        itemsByTitle: '=itemsByTitle'
+        ticketsByTitle: '=ticketsByTitle'
       },
       templateUrl: directiveTemplateRoot + 'sticky_column_view.html',
       link: function(scope) {}
@@ -17,7 +17,7 @@ angular.module('XPBoard').directive(
       restrict: 'E',
       replace: true,
       scope: {
-        items: '=items',
+        tickets: '=tickets',
         title: '=title'
       },
       templateUrl: directiveTemplateRoot + 'sticky_column.html',
@@ -25,17 +25,20 @@ angular.module('XPBoard').directive(
     }
   }
 ).directive(
-  'sticky', function() {
+  'sticky', ['URLGenerator', 'status', function(URLGenerator) {
     return {
       restrict: 'E',
       replace: true,
       scope: {
-        data: '=data'
+        ticket: '=ticket'
       },
       templateUrl: directiveTemplateRoot + 'sticky.html',
-      link: function(scope, element, attrs) {}
+      link: function(scope, element, attrs) {
+        scope.URLGenerator = URLGenerator;
+        console.log(scope.ticket);
+      }
     }
-  }
+  }]
 ).directive(
   'ticketTable', function() {
     return {

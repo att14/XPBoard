@@ -1,11 +1,13 @@
 <div class="sticky">
-  {{data.id}}
-  <span ng-show={{data.review_request.length}}>
+  <a href="{{ URLGenerator.getTicketURL(ticket.id) }}">
+    {{ticket.id}}
+  </a>
+  <span ng-show="ticket.review_request.length > 0">
     - 
-    <span ng-repeat="review_request in data.review_requests">
+    <span ng-repeat="review_request in ticket.review_requests">
       {{review_request.id}}
     </span>
   </span>
   <br />
-  {{data.summary}}
+  {{ticket.summary}}
 </div>
