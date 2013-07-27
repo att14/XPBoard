@@ -79,5 +79,4 @@ def refresh_user(username):
         usernames,
         models.Ticket.open_or_changed_in_last()
     )
-    print "fun"
     return simplejson.dumps([ticket.as_dict for ticket in ticket_query])
