@@ -1,108 +1,117 @@
-body {
-
-}
-
 a:hover {
-  text-decoration: none;
+    text-decoration: none;
 }
 
 #content {
-  text-align: center;
+    text-align: center;
 }
 
 input {
-  margin: auto;
+    margin: auto;
 }
 
 .sticky-column-container:after {
-  clear:both;
+    clear:both;
 }
 
 .sticky-column {
-  float: left;
-  width: 18%;
-  height: 100%;
-  margin: 1%;
+    float: left;
+    width: 18%;
+    height: 100%;
+    margin: 1%;
 }
 
 .sticky-column-title {
-  float: left;
-  width: 100%;
-  text-align: center;
+    float: left;
+    width: 100%;
+    text-align: center;
 }
 
 .sticky {
-  float: left;
-  width: 99%;
-  box-sizing: border-box;
-  height: auto;
-  margin: 1%;
-  padding: 5px;
-  border-radius: 10px;
-  border: 1px solid #ccc;
-  overflow: hidden;
-  -moz-box-shadow:5px 5px 7px rgba(33,33,33,1);
-  -webkit-box-shadow: 5px 5px 7px rgba(33,33,33,.7);
-  box-shadow: 5px 5px 7px rgba(33,33,33,.7);
-}
-
-.sticky:hover {
-  -moz-box-shadow: 10px 10px 7px rgba(0,0,0,.7);
-  -webkit-box-shadow: 10px 10px 7px rgba(0,0,0,.7);
-  box-shadow: 10px 10px 7px rgba(0,0,0,.7);
-  -webkit-transform: scale(1.05);
-  -moz-transform: scale(1.05);
-  -o-transform: scale(1.05);
-  position: relative;
-  z-index: 5;
-  -moz-transition: -moz-transform .15s linear;
-  -o-transition: -o-transform .15s linear;
-  -webkit-transition: -webkit-transform .15s linear;
-}
-
-.ticket-with-owner {
-  float: left;
-}
-
-.review-request-with-reviewer {
-  float: right;
-}
-
-.sticky-header {
-  position: relative;
-  overflow: auto;
-  width: 100%;
-}
-
-.sticky-header:after {
-  clear: both;
-}
-
-.bold {
-  font-weight:bold;
-  color: #ff0000;
+    float: left;
+    width: 99%;
+    box-sizing: border-box;
+    height: auto;
+    margin: 1%;
+    padding: 5px;
+    border-radius: 10px;
+    border: 1px solid #ccc;
+    overflow: hidden;
+    -moz-box-shadow:5px 5px 7px rgba(33,33,33,1);
+    -webkit-box-shadow: 5px 5px 7px rgba(33,33,33,.7);
+    box-shadow: 5px 5px 7px rgba(33,33,33,.7);
 }
 
 /* For angular animation */
 
 .sticky-leave-active, .sticky-enter-active, .sticky-move-active {
-  -webkit-transition: all cubic-bezier(0.250, 0.460, 0.450, 0.940) 1s;
-  -moz-transition: all cubic-bezier(0.250, 0.460, 0.450, 0.940) 1s;
-  -ms-transition: all cubic-bezier(0.250, 0.460, 0.450, 0.940) 1s;
-  -o-transition: all cubic-bezier(0.250, 0.460, 0.450, 0.940) 1s;
-  transition: all cubic-bezier(0.250, 0.460, 0.450, 0.940) 1s;
+    -webkit-transition: all linear .25s;
+    -moz-transition: all linear .25s;
+    -ms-transition: all linear .25s;
+    -o-transition: all linear .25s;
+    transition: all linear .25s;
 }
 
 .sticky-enter {
-  height: 0px;
+    max-height: 0px;
+    margin: 0;
+    padding: 0px;
+    box-sizing: none;
 }
 
-.sticky-leave-active {
-  height: 0px;
-  margin: 0px;
-  padding: 0px;
+.sticky-leave {
+    height: 80px;
 }
 
-.sticky-enter-active {
-  height: auto;
+.sticky-leave.sticky-leave-active {
+    height: 0px;
+    margin: 0px;
+    padding: 0px;
+    box-sizing: none;
+}
+
+.sticky-enter-active.sticky-enter {
+    max-height: 150px;
+    margin: 1%;
+    padding: 5px;
+    box-sizing: border-box;
+}
+
+/**/
+
+.sticky:hover {
+    -moz-box-shadow: 10px 10px 7px rgba(0,0,0,.7);
+    -webkit-box-shadow: 10px 10px 7px rgba(0,0,0,.7);
+    box-shadow: 10px 10px 7px rgba(0,0,0,.7);
+    -webkit-transform: scale(1.05);
+    -moz-transform: scale(1.05);
+    -o-transform: scale(1.05);
+    position: relative;
+    z-index: 5;
+    -moz-transition: -moz-transform .15s linear;
+    -o-transition: -o-transform .15s linear;
+    -webkit-transition: -webkit-transform .15s linear;
+}
+
+.ticket-with-owner {
+    float: left;
+}
+
+.review-request-with-reviewer {
+    float: right;
+}
+
+.sticky-header {
+    position: relative;
+    overflow: auto;
+    width: 100%;
+}
+
+.sticky-header:after {
+    clear: both;
+}
+
+.bold {
+    font-weight:bold;
+    color: #ff0000;
 }

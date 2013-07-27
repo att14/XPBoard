@@ -53,11 +53,9 @@ def user_data():
 @app.route('/tickets')
 def tickets():
     usernames = request.args.getlist('user') or config.users
-    ticket_query = models.Ticket.query_reviewing_and_owned_by_usernames(
-        usernames,
-        models.Ticket.open_or_changed_in_last()
+    return simplejson.dumps(
+        [ticket.as_dict for ticket in models.Ticket.fetch_relevant_to(usernames)]
     )
-    return simplejson.dumps([ticket.as_dict for ticket in ticket_query])
 
 
 @app.route('/config')

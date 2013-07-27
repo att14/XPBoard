@@ -1,9 +1,9 @@
 var TicketsByStatusCtrl = ['$scope', 'TicketData', 'status', function($scope, TicketData, status) {
   $scope.searchText = "";
-  var ticketsByStatus =  _.groupBy(TicketData.tickets, 'status');
   $scope.ticketsByStatus = [];
   setTimeout(
     function() {
+      var ticketsByStatus =  _.groupBy(TicketData.tickets, 'status');
       $scope.ticketsByStatus = _.map(status.order, function(statusEnum) {
         return {
           title: status.remapping[statusEnum],
@@ -11,7 +11,7 @@ var TicketsByStatusCtrl = ['$scope', 'TicketData', 'status', function($scope, Ti
         }
       });
       $scope.$apply();
-    }, 30
+    }, 200
   );
 }];
 

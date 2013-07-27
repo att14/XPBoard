@@ -389,6 +389,14 @@ class Ticket(db.Model):
     def open_or_changed_in_last(cls, time_delta=datetime.timedelta(days=7)):
         return cls.open_or_changed_after(datetime.datetime.now() - time_delta)
 
+    @classmethod
+    def fetch_relevant_to(cls, usernames):
+        return cls.query_reviewing_and_owned_by_usernames(
+            usernames,
+            cls.open_or_changed_in_last(),
+            cls.time_changed > datetime.datetime.now() - datetime.timedelta(days=60)
+        )
+
     owner = db.relationship(
         User,
         primaryjoin='Ticket.owner_id == User.id',
