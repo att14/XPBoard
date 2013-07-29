@@ -32,7 +32,7 @@ python setup.py install
 Populate the database.
 ```
 python db_init.py
-python refresh_data.py
+python refresh.py
 ```
 
 Run the application.
