@@ -36,10 +36,13 @@ angular.module('XPBoard').factory('TicketData', ['$http', function($http) {
     }
   }
 }]).factory('config', ['$http', function($http) {
-  var config = {
-  }
-  $http.get('/config').success(function(data) {
-    _.extend(config, data);
+  var config = {}
+  $.ajax({
+    url: '/config',
+    success: function(data) {
+      _.extend(config, JSON.parse(data));
+    },
+    async: false
   });
   return config;
 }]).factory('status', function() {
@@ -53,4 +56,23 @@ angular.module('XPBoard').factory('TicketData', ['$http', function($http) {
     },
     order: ["new", "assigned", "in_review", "ship_it", "closed"]
   };
-});
+}).factory('search', ['config', function(config) {
+  function Search() {
+    this.filterFunctions = [];
+  }
+
+  Search.prototype.addFilter = function(filterFunction) {
+    this.filterFunctions.push(filterFunction);
+  }
+
+  Search.prototype.filterTickets = function(tickets) {
+    return _.filter(tickets, this.filterTicket, this);
+  }
+
+  Search.prototype.filterTicket = function(ticket) {
+    return _.all(this.filterFunctions, function(filterFunction) {
+      return filterFunction(ticket);
+    });
+  }
+  return new Search;
+}]);

@@ -25,7 +25,6 @@ angular.module('XPBoard').directive(
       templateUrl: directiveTemplateRoot + 'sticky_column.html',
       link: function(scope, element, attrs) {
         scope.byOwnerOrReviewer = function(ticket) {
-          //console.log("call");
           var matchers = scope.searchText.split("|");
           return _.any(matchers, function(matcher) {
             return ticket.owner.indexOf(matcher) > -1 || (
