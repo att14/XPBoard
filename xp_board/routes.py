@@ -9,24 +9,6 @@ from . import logic
 from . import models
 
 
-@app.route('/reviews')
-def review_board_dashboard():
-    users = sorted(
-        models.User.list_by_column_values(config.users, 'username'),
-        key=lambda user: -len(user.primary_reviews.all())
-    )
-    return render_template(
-        'reviews.html',
-        users=users,
-        review_url_generator=lambda review_id: 'http://%s/r/%s' % (
-            config.rb_url,
-            review_id
-        ),
-        team_name=config.team_name,
-        length=len
-    )
-
-
 @app.route('/status')
 @app.route('/')
 def board():
