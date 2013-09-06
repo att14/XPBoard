@@ -4,13 +4,13 @@
       <span class="owner" ng-class="ticket.needs_revision ? 'bold' : 'no-bold'">
         {{ticket.owner}}
       </span>
-      <a class="ticket-id" href="{{URLGenerator.getTicketURL(ticket.id)}}">
+      <a class="ticket-id" target="_blank" href="{{URLGenerator.getTicketURL(ticket.id)}}">
         {{ticket.id}}
       </a>
     </div>
     <div class="review-request-with-reviewer" ng-hide="ticket.review_requests.length < 1">
       <div ng-repeat="review_request in ticket.review_requests">
-        <a class="review-request-id" href="{{URLGenerator.getReviewRequestURL(review_request.id)}}">
+        <a class="review-request-id" target="_blank" href="{{URLGenerator.getReviewRequestURL(review_request.id)}}">
           {{review_request.id}}
         </a>
         <span class="reviewer" ng-class="ticket.needs_review && !ticket.needs_revision ? 'bold' : 'no-bold'">
