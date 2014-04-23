@@ -10,7 +10,7 @@ class ETL(object):
     # returned by the extractor.
     transformer = None
 
-    # `loader` is an object with a `load` metheod that operates on the output of the
+    # `loader` is an object with a `load` method that operates on the output of the
     # transform phase.
     loader = None
 
